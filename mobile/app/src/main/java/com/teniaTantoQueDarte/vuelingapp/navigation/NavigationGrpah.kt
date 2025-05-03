@@ -19,8 +19,10 @@ import androidx.navigation.navigation
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.ProfileScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import androidx.activity.ComponentActivity
+import com.teniaTantoQueDarte.vuelingapp.ui.screen.FavoriteScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.HomeScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.NewsScreen
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.FavoriteViewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
 
@@ -31,7 +33,8 @@ fun MainNavigationGraph(
     paddingValues: PaddingValues = PaddingValues(0.dp),
     sharedProfileViewModel: ProfileViewModel? = null,
     sharedHomeViewModel: HomeViewmodel? = null,
-    sharedNewsViewModel: NewsViewModel? = null
+    sharedNewsViewModel: NewsViewModel? = null,
+    sharedFavoriteViewModel: FavoriteViewModel? =null
 
 ) {
 
@@ -48,6 +51,10 @@ fun MainNavigationGraph(
         viewModelStoreOwner = context as ComponentActivity
     )
 
+    val favoriteViewModel = sharedFavoriteViewModel ?: viewModel(
+        viewModelStoreOwner = context as ComponentActivity
+    )
+
 
     // Reduce la frecuencia de recomposición al recordar las secciones
     val homeSectionBuilder = remember(navController) { { builder: NavGraphBuilder ->
@@ -57,7 +64,7 @@ fun MainNavigationGraph(
         builder.ProfileSection(navController, profileViewModel)
     }}
     val favouritesSectionBuilder = remember(navController) { { builder: NavGraphBuilder ->
-        builder.FavouritesSection(navController)
+        builder.FavouritesSection(navController,favoriteViewModel)
     }}
     val newsSectionBuilder = remember(navController, NewsViewModel) { { builder: NavGraphBuilder ->
         builder.NewsSection(navController, NewsViewModel)

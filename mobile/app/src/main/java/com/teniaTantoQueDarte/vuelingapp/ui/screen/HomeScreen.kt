@@ -129,7 +129,10 @@ fun HomeScreen(viewmodel: HomeViewmodel) {
                 items(filteredFlights) { flight ->
                     FlightItem(
                         item = flight,
-                        index = filteredFlights.indexOf(flight)
+                        index = filteredFlights.indexOf(flight),
+                        onFavoriteClick = { flightNumber, isFavorite ->
+                            viewmodel.toggleFavorite(flightNumber, isFavorite)
+                        }
                     )
                 }
             }
