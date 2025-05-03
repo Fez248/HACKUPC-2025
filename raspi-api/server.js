@@ -50,10 +50,40 @@ app.get('/api/:flightNumber/news', (req, res) => {
     res.json({ news: flightNews });
 });
 
-app.post('/api/data', (req, res) => {
-  res.status(201).json({ received: req.body });
-});
-
 app.listen(80, () => {
   console.log('HTTP server running on port 80');
+});
+
+function saveFlights() {
+    fs.writeFileSync('data.json', JSON.stringify(flights, null, 2), 'utf8');
+}
+
+// PATCH endpoint to modify flight details
+app.patch('/api/admin/flights/:flightNumber', (req, res) => {
+    const { flightNumber } = req.params;
+    const updates = req.body;
+
+    // Find flight
+    const flight = flights.find(f => f.flightNumber === flightNumber);
+    if (!flight) {
+      return res.status(404).json({ error: 'Flight not found' });
+    }
+
+    // Prevent changing flightNumber
+    if ('flightNumber' in updates) {
+      return res.status(400).json({ error: 'Flight number cannot be modified' });
+    }
+
+    // Apply updates to allowed fields
+    const allowedFields = ['origin', 'destination', 'departureTime', 'arrivalTime', 'status', 'gate', 'door', 'terminal'];
+    for (const key of Object.keys(updates)) {
+      if (allowedFields.includes(key)) {
+        flight[key] = updates[key];
+      } else {
+        return res.status(400).json({ error: `Invalid field: ${key}` });
+      }
+    }
+
+    saveFlights();
+    res.json({ message: 'Flight updated', flight });
 });
