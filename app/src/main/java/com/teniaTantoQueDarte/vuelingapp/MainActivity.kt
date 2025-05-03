@@ -11,6 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
+import com.teniaTantoQueDarte.vuelingapp.ui.screen.FlightItem
+import com.teniaTantoQueDarte.vuelingapp.ui.screen.FlightItemPreview
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,10 +23,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             VuelingAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    innerPadding
+                        FlightItem(
+                            item = FlightModel(
+                                ArriveTime = "12:00",
+                                DepartTime = "10:00",
+                                Seat = "1A",
+                                From = "Barcelona",
+                                To = "Madrid",
+                                FromShort = "BCN",
+                                ToShort = "MAD",
+                                FlightNumber = "VY1234",
+                                Status = "A tiempo",
+                                Reason = "N/A"
+                            ),
+                            index = 0
+                        )
+
                 }
             }
         }
