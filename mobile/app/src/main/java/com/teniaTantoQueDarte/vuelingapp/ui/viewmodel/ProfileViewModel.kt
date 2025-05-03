@@ -1,9 +1,7 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.viewmodel
 
 import android.app.Application
-import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
@@ -25,10 +23,17 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    private val _permissionsState = MutableStateFlow(false)
+    val permissionsState: StateFlow<Boolean> = _permissionsState.asStateFlow()
+
     // Coroutine específica para operaciones de IO
     private val ioScope = CoroutineScope(
         Dispatchers.IO + SupervisorJob() + CoroutineName("ProfileIO")
     )
+
+    val context = getApplication<Application>().applicationContext
+
+    private var bluetoothManager: BluetoothManager? = null;
 
     // Control de frecuencia para operaciones batch
     private var lastBatchOperationTime = 0L
@@ -38,9 +43,13 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         loadUserData()
     }
 
-    fun toggleSharingMode(isSharing: Boolean) {
+    fun setSharingMode(isSharing: Boolean) {
         // Evita operaciones redundantes
         if (_uiState.value.isSharingMode == isSharing) return
+        if(!permissionsState.value) {
+            // Si no se han concedido permisos, no se puede cambiar el modo
+            return
+        }
 
         ioScope.launch {
             repository.toggleSharingMode(isSharing)
@@ -48,20 +57,15 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(isSharingMode = isSharing) }
             }
-
-            if (isSharing) {
-                val bluetoothAdapter: BluetoothAdapter? =
-                    getApplication<Application>().getSystemService(BluetoothManager::class.java)?.adapter
-
-                /*if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
-                    _eventFlow.emit(ProfileEvent.RequestBluetoothEnable)
-                }*/
-            }
         }
     }
 
-    sealed class ProfileEvent {
-        object RequestBluetoothEnable : ProfileEvent()
+    fun setPermissionsState(isGranted: Boolean) {
+        _permissionsState.value = isGranted
+    }
+
+    fun setBluetoothManager(manager: BluetoothManager) {
+        bluetoothManager = manager
     }
 
     fun loadUserData() {

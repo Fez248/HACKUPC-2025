@@ -1,10 +1,13 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.screen
 
+import android.Manifest
 import android.app.Activity
 import android.app.Application
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Intent
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,12 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-//import android.app.Activity.startActivityForResult
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
-import androidx.appcompat.app.AppCompatActivity
+
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
@@ -42,30 +45,61 @@ fun ProfileScreen(
 ) {
     // Optimizamos usando collectAsStateWithLifecycle para mejor rendimiento
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-
-    val displayData = remember(uiState) {
-        // Procesar datos una sola vez por cada cambio de estado
-        ProfileDisplayData(
-            formattedPoints = "${uiState.value.points} pts",
-            isSharing = uiState.value.isSharingMode
-        )
-    }
+    val permissionsState = viewModel.permissionsState.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
+
+    // Lanzador de permisos para Bluetooth
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.setPermissionsState(true)
+        } else {
+            viewModel.setPermissionsState(false)
+        }
+    }
+
+    LaunchedEffect(permissionsState.value) {
+        if (!permissionsState.value) {
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+        }
+    }
+
+
+    // Request bluetooth enable
+    val getResult = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode != Activity.RESULT_OK) {
+            viewModel.setSharingMode(false)
+        }
+    }
+
+
     LaunchedEffect(uiState.value.isSharingMode) {
+        if(!uiState.value.isSharingMode) return@LaunchedEffect
         val bluetoothManager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
         val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.getAdapter()
         if (bluetoothAdapter == null) {
-            viewModel.toggleSharingMode(false)
+            viewModel.setSharingMode(false)
         }
-        else if (bluetoothAdapter?.isEnabled == false) {
+        else if (bluetoothAdapter.isEnabled == false) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Intent? = result.data
-                    // your operation...
-                }
-            }
+            getResult.launch(enableBtIntent)
+        }
+        else {
+            viewModel.setBluetoothManager(bluetoothManager)
         }
     }
 
@@ -124,7 +158,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Switch(
                 checked = uiState.value.isSharingMode,
-                onCheckedChange = { viewModel.toggleSharingMode(it) }
+                onCheckedChange = { viewModel.setSharingMode(!uiState.value.isSharingMode) }
             )
         }
     }
