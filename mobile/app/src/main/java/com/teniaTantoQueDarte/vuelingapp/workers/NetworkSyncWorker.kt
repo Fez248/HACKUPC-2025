@@ -63,14 +63,14 @@ class NetworkSyncWorker(
 
             val flights = apiResponse.map { apiModel ->
                 FlightModel(
-                    ArriveTime = apiModel.arrivalTime,
-                    DepartTime = apiModel.departureTime,
-                    FromShort = apiModel.origin,
-                    ToShort = apiModel.destination,
-                    Status = apiModel.status,
-                    FlightNumber = apiModel.flightNumber,
-                    updateTime = System.currentTimeMillis().toString(),
-                    favorito = false,
+                    ArriveTime = apiModel.landingTime ?: "Unknown",
+                    DepartTime = apiModel.departureTime ?: "Unknown",
+                    FromShort = apiModel.originShort ?: "",
+                    ToShort = apiModel.destinationShort ?: "",
+                    Status = apiModel.status ?: "Unknown",
+                    FlightNumber = apiModel.flightNumber ?: "",
+                    updateTime = apiModel.date ?: "Unknown",
+                    favorito = false
                 )
             }
 
