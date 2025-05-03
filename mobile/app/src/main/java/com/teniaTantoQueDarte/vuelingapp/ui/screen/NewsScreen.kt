@@ -131,8 +131,6 @@ fun NewsScreen(viewModel: NewsViewModel) {
 @Composable
 fun NewsScreenPreview() {
     VuelingAppTheme {
-        NewsScreen(
-            NewsViewModel()
-        )
+        //NewsScreen()
     }
 }
