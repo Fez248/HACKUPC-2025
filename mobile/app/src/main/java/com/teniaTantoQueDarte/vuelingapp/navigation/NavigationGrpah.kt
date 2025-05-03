@@ -20,6 +20,7 @@ import com.teniaTantoQueDarte.vuelingapp.ui.screen.ProfileScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import androidx.activity.ComponentActivity
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.HomeScreen
+import com.teniaTantoQueDarte.vuelingapp.ui.screen.NewsScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
 
