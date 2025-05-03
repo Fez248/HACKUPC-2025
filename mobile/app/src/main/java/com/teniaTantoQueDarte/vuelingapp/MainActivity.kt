@@ -25,6 +25,7 @@ import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.FavoriteViewModel
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -36,6 +37,10 @@ class MainActivity : ComponentActivity() {
     }
     val homeViewModel by lazy {
         ViewModelProvider(this)[HomeViewmodel::class.java]
+    }
+
+    val favoriteViewModel by lazy {
+        ViewModelProvider(this)[FavoriteViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +104,8 @@ class MainActivity : ComponentActivity() {
                         navController = navController,
                         paddingValues = innerPadding,
                         sharedProfileViewModel = profileViewModel, // Pasa el ViewModel compartido
-                        sharedHomeViewModel = homeViewModel // Pasa el ViewModel compartido
-
+                        sharedHomeViewModel = homeViewModel, // Pasa el ViewModel compartido
+                        sharedFavoriteViewModel = favoriteViewModel // Pasa el ViewModel compartido
                     )
                 }
             }

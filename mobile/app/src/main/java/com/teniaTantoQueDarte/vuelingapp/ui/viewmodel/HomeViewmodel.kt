@@ -149,6 +149,24 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+    fun toggleFavorite(flightNumber: String, isFavorite: Boolean) {
+        viewModelScope.launch {
+            try {
+                flightRepository.toggleFavorite(flightNumber, isFavorite)
+                // Actualiza la lista local si es necesario
+                val updatedList = _flights.value.map { flight ->
+                    if (flight.FlightNumber == flightNumber) {
+                        flight.copy(favorito = isFavorite)
+                    } else {
+                        flight
+                    }
+                }
+                _flights.value = updatedList
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error al actualizar favorito", e)
+            }
+        }
+    }
 
     override fun onCleared() {
         Log.d("HomeViewModel", "ViewModel destruido, eliminando observer")
