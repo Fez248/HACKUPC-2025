@@ -37,13 +37,18 @@ app.get('/api/:flightNumber/data', (req, res) => {
     const { flightNumber } = req.params;
     if (!flightNumber) return res.status(400).json({ error: 'Flight number is required' });
 
-    if (flightNumber === 'ALL') return res.json(data);
+    if (flightNumber === 'ALL') {
+        const signature = signData(data);
+        const response = [...data, { signature }];
+        return res.json(response);
+    }
 
     const flight = data.find(f => f.flightNumber === flightNumber);
     if (!flight) return res.status(404).json({ error: 'Flight not found' });
 
     const signature = signData(flight);
-    res.json({ data: flight, signature });
+    const response = { ...flight, signature };
+    res.json(response);
 });
 
 // GET /api/:flightNumber/news
@@ -51,13 +56,18 @@ app.get('/api/:flightNumber/news', (req, res) => {
     const { flightNumber } = req.params;
     if (!flightNumber) return res.status(400).json({ error: 'Flight number is required' });
 
-    if (flightNumber === 'ALL') return res.json(news);
+    if (flightNumber === 'ALL') {
+        const signature = signData(news);
+        const response = [...news, { signature }];
+        return res.json(response);
+    }
 
     const flightNews = news.filter(n => n.flightNumber === flightNumber);
     if (flightNews.length === 0) return res.status(404).json({ error: 'Flight news not found' });
 
     const signature = signData(flightNews);
-    res.json({ news: flightNews, signature });
+    const response = [...flightNews, { signature }];
+    res.json(response);
 });
 
 // PATCH /api/admin/:flightNumber/data
