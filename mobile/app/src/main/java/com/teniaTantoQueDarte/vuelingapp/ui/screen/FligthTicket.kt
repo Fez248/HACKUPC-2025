@@ -36,7 +36,7 @@ import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingOrange
 import androidx.compose.material.icons.outlined.Star
 
 @Composable
-fun FlightItem(item: FlightModel, index: Int){
+fun FlightItem(item: FlightModel, index: Int,     onFavoriteClick: (String, Boolean) -> Unit = { _, _ -> }){
     val context = LocalContext.current
 
     // Estado local para controlar el cambio visual inmediato
@@ -159,7 +159,7 @@ fun FlightItem(item: FlightModel, index: Int){
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
-                    // Actualizar solo el estado visual local
+                    onFavoriteClick(item.FlightNumber, !item.favorito)
                     esFavorito = !esFavorito
                 }
                 .constrainAs(favoriteStar) {
