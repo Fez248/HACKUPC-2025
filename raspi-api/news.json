@@ -1,0 +1,44 @@
+[
+    {
+        "id": "news001",
+        "flightNumber": "DL456",
+        "title": "New Route Announced",
+        "content": "A new route from NYC to Tokyo has been announced.",
+        "date": "2025-05-01T10:00:00Z"
+    },
+    {
+        "id": "news002",
+        "flightNumber": "DL454",
+        "title": "Delay Notice",
+        "content": "Flight DL454 will be delayed by 2 hours due to weather.",
+        "date": "2025-05-02T12:00:00Z"
+    },
+    {
+        "id": "news003",
+        "flightNumber": "UA123",
+        "title": "Gate Changed",
+        "content": "Flight UA123 will now depart from Gate G4.",
+        "date": "2025-05-cscsvsv0:00Z"
+    },
+    {
+        "id": "news004",
+        "flightNumber": "DL456",
+        "title": "In-Flight Entertainment Update",
+        "content": "Flight DL456 now offers free Wi-Fi for all passengers.",
+        "date": "2025-05-03T14:00:00Z"
+    },
+    {
+        "id": "news005",
+        "flightNumber": "DL454",
+        "title": "Meal Service Update",
+        "content": "Flight DL454 will now include a complimentary meal service.",
+        "date": "2025-05-04T16:00:00Z"
+    },
+    {
+        "id": "news006",
+        "flightNumber": "UA123",
+        "title": "Schedule Adjustment",
+        "content": "Flight UA123's departure time has been adjusted by 30 minutes.",
+        "date": "2025-05-05T18:00:00Z"
+    }
+]
