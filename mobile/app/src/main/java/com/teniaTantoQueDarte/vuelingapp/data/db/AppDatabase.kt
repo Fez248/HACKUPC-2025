@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.teniaTantoQueDarte.vuelingapp.data.dao.UserDao
 import com.teniaTantoQueDarte.vuelingapp.data.model.User
 
-@Database(entities = [User::class], version = 1, exportSchema = false)
+@Database(entities = [User::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 

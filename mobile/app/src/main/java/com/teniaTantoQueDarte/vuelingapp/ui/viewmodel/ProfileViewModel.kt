@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit
 data class ProfileUiState(
     val points: Int = 0,
     val isSharingMode: Boolean = false,
+    val moreBatteryGuy: Boolean = false,
     val isLoading: Boolean = true
 )
 
@@ -44,6 +45,19 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             // Actualiza UI en Main dispatcher
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(isSharingMode = isSharing) }
+            }
+        }
+    }
+
+    fun setBatteryStatus(isMoreBattery: Boolean) {
+        // Evita operaciones redundantes
+        if (_uiState.value.moreBatteryGuy == isMoreBattery) return
+
+        ioScope.launch {
+            repository.setBatteryStatus(isMoreBattery)
+            // Actualiza UI en Main dispatcher
+            withContext(Dispatchers.Main) {
+                _uiState.update { it.copy(moreBatteryGuy = isMoreBattery) }
             }
         }
     }

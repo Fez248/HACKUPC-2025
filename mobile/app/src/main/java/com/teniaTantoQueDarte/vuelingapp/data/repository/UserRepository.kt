@@ -46,6 +46,12 @@ class UserRepository(private val context: Context) {
         flushUpdatesIfNeeded()
     }
 
+    suspend fun setBatteryStatus(isMoreBattery: Boolean) {
+        // Utiliza el sistema de batch updates
+        queueUpdate("battery", isMoreBattery)
+        flushUpdatesIfNeeded()
+    }
+
     private fun queueUpdate(field: String, value: Any) {
         synchronized(pendingUpdates) {
             pendingUpdates[field] = value
@@ -83,6 +89,9 @@ class UserRepository(private val context: Context) {
                     "sharing" -> {
                         userDao.updateSharingMode(value as Boolean)
                         updatedUser = updatedUser.copy(isSharingMode = value)
+                    }
+                    "battery" -> {
+                        updatedUser = updatedUser.copy(moreBatteryGuy = value as Boolean)
                     }
                     // Agregar otros campos según necesidad
                 }
