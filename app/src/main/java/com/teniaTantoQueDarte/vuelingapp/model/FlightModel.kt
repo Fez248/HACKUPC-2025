@@ -11,5 +11,6 @@ data class FlightModel(
     val Status: String,
     val Reason: String,
     val FlightNumber: String,
-    val updateTime: String
+    val updateTime: String,
+    val favorito: Boolean = false
 )

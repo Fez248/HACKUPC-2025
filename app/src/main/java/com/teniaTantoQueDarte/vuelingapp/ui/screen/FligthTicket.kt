@@ -27,10 +27,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.graphics.Color
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingOrange
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 
 @Composable
 fun FlightItem(item: FlightModel, index: Int){
     val context = LocalContext.current
+
+    // Estado local para controlar el cambio visual inmediato
+    var esFavorito by remember { mutableStateOf(item.favorito) }
+
+    // Determinar el color según el estado del vuelo
+    val timeColor = if (item.Status.equals("Delayed", ignoreCase = true) ||
+        item.Status.equals("Retrasado", ignoreCase = true)) {
+        Color.Red
+    } else {
+        Color(0xFF303336) // Color original gris oscuro
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -38,17 +59,18 @@ fun FlightItem(item: FlightModel, index: Int){
             .fillMaxWidth()
             .clickable { }
             .background(
-                color = Color(0xFFFFCF31), // Color amarillo básico
+                color = Color(0xFFFFCF31),
                 shape = RoundedCornerShape(15.dp)
             )
     ) {
-        // El resto del código permanece igual
         val (
             fromTxt, fromShortTxt, departTimeTxt,
             airplaneIcon,
             toTxt, toShortTxt, arriveTimeTxt,
+            favoriteStar, // Nuevo elemento
             dashLine,
-            flightNumberTxt, statusTxt, reasonTxt
+            flightNumberTxt, statusTxt, reasonTxt,
+            lastUpdateLabelTxt, updateTimeTxt
         ) = createRefs()
 
         // COLUMNA ORIGEN - Izquierda
@@ -77,7 +99,7 @@ fun FlightItem(item: FlightModel, index: Int){
             text = item.DepartTime,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF303336),
+            color = timeColor,  // Usar el color condicional
             modifier = Modifier.constrainAs(departTimeTxt) {
                 top.linkTo(fromShortTxt.bottom, margin = 4.dp)
                 start.linkTo(fromTxt.start)
@@ -125,11 +147,29 @@ fun FlightItem(item: FlightModel, index: Int){
             text = item.ArriveTime,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF303336),
+            color = timeColor,
             modifier = Modifier.constrainAs(arriveTimeTxt) {
                 top.linkTo(toShortTxt.bottom, margin = 4.dp)
                 end.linkTo(toTxt.end)
             }
+        )
+
+        // ICONO DE ESTRELLA PARA FAVORITOS
+        Icon(
+            imageVector = if (esFavorito) Icons.Filled.Star else Icons.Outlined.Star,
+            contentDescription = "Marcar como favorito",
+            tint = if (esFavorito) VuelingOrange else Color(0xFF4B4B4B),
+            modifier = Modifier
+                .size(32.dp)
+                .clickable {
+                    // Actualizar solo el estado visual local
+                    esFavorito = !esFavorito
+                }
+                .constrainAs(favoriteStar) {
+                    bottom.linkTo(dashLine.top, margin = 8.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
         )
 
         // LÍNEA DIVISORIA
@@ -160,7 +200,7 @@ fun FlightItem(item: FlightModel, index: Int){
             }
         )
 
-// Status y Reason en columna central (con menos espacio entre ellos)
+// Status en el centro
         Text(
             text = item.Status,
             fontSize = 14.sp,
@@ -174,6 +214,21 @@ fun FlightItem(item: FlightModel, index: Int){
             }
         )
 
+// Last update a la misma altura que Status
+        Text(
+            text = "Last update:",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Normal,
+            color = Color(0xFF303336),
+            textAlign = TextAlign.End,
+            modifier = Modifier.constrainAs(lastUpdateLabelTxt) {
+                top.linkTo(statusTxt.top)
+                end.linkTo(parent.end, margin = 16.dp)
+                baseline.linkTo(statusTxt.baseline)
+            }
+        )
+
+// Reason en el centro
         Text(
             text = item.Reason,
             fontSize = 14.sp,
@@ -181,10 +236,24 @@ fun FlightItem(item: FlightModel, index: Int){
             color = Color(0xFF303336),
             textAlign = TextAlign.Center,
             modifier = Modifier.constrainAs(reasonTxt) {
-                top.linkTo(statusTxt.bottom, margin = 0.dp) // Reducido de 4.dp a 2.dp
+                top.linkTo(statusTxt.bottom, margin = 0.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 bottom.linkTo(parent.bottom, margin = 10.dp)
+            }
+        )
+
+// Hora al mismo nivel que Reason
+        Text(
+            text = item.updateTime,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color(0xFF303336),
+            textAlign = TextAlign.End,
+            modifier = Modifier.constrainAs(updateTimeTxt) {
+                top.linkTo(reasonTxt.top)
+                end.linkTo(lastUpdateLabelTxt.end)
+                baseline.linkTo(reasonTxt.baseline)
             }
         )
     }
@@ -207,7 +276,8 @@ fun FlightItemPreview() {
                 FlightNumber = "VY1234",
                 Status = "A tiempo",
                 Reason = "Sin retrasos",
-                updateTime = "2023-10-01T12:00:00Z"
+                updateTime = "11:00",
+                favorito = false
             ),
             index = 0
         )
