@@ -16,8 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,22 +27,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
-import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingBlue
-import com.teniaTantoQueDarte.vuelingapp.ui.theme.White
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.collectAsState
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
 
 fun getSampleFlights(): List<FlightModel> {
     return listOf(
         FlightModel(
             ArriveTime = "12:45",
             DepartTime = "11:30",
-            Seat = "12A",
-            From = "Barcelona",
-            To = "Madrid",
             FromShort = "BCN",
             ToShort = "MAD",
             Status = "A tiempo",
-            Reason = "Sin retrasos",
             FlightNumber = "VY1235",
             updateTime = "12:00",
             favorito = true
@@ -52,13 +46,9 @@ fun getSampleFlights(): List<FlightModel> {
         FlightModel(
             ArriveTime = "18:15",
             DepartTime = "15:40",
-            Seat = "23F",
-            From = "Barcelona",
-            To = "Londres",
             FromShort = "BCN",
             ToShort = "LHR",
             Status = "Retrasado",
-            Reason = "Mal tiempo",
             FlightNumber = "VY7842",
             updateTime = "17:45",
             favorito = true
@@ -66,13 +56,9 @@ fun getSampleFlights(): List<FlightModel> {
         FlightModel(
             ArriveTime = "21:00",
             DepartTime = "19:45",
-            Seat = "4C",
-            From = "Madrid",
-            To = "Roma",
             FromShort = "MAD",
             ToShort = "FCO",
             Status = "Cancelado",
-            Reason = "Problemas técnicos",
             FlightNumber = "VY6574",
             updateTime = "20:00",
             favorito = false
@@ -80,13 +66,9 @@ fun getSampleFlights(): List<FlightModel> {
         FlightModel(
             ArriveTime = "10:20",
             DepartTime = "09:45",
-            Seat = "16D",
-            From = "Valencia",
-            To = "Barcelona",
             FromShort = "VLC",
             ToShort = "BCN",
             Status = "Delayed",
-            Reason = "IDK",
             FlightNumber = "VY3421",
             updateTime = "10:00",
             favorito = false
@@ -96,21 +78,18 @@ fun getSampleFlights(): List<FlightModel> {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewmodel: HomeViewmodel) {
     var searchQuery by remember { mutableStateOf("") }
-    val flights = remember { getSampleFlights() }
+    val flights: List<FlightModel> by viewmodel.flights.collectAsState(emptyList())
 
-    // Filtrar vuelos basado en la búsqueda
-    val filteredFlights = remember(searchQuery, flights) {
+    val filteredFlights: List<FlightModel> = remember(searchQuery, flights) {
         if (searchQuery.isEmpty()) {
             flights
         } else {
             flights.filter { flight ->
-                flight.From.contains(searchQuery, ignoreCase = true) ||
-                flight.To.contains(searchQuery, ignoreCase = true) ||
                 flight.FromShort.contains(searchQuery, ignoreCase = true) ||
-                flight.ToShort.contains(searchQuery, ignoreCase = true) ||
-                flight.FlightNumber.contains(searchQuery, ignoreCase = true)
+                        flight.ToShort.contains(searchQuery, ignoreCase = true) ||
+                        flight.FlightNumber.contains(searchQuery, ignoreCase = true)
             }
         }
     }
@@ -162,6 +141,6 @@ fun HomeScreen() {
 @Composable
 fun HomeScreenPreview() {
     VuelingAppTheme {
-        HomeScreen()
+        //HomeScreen()nu
     }
 }

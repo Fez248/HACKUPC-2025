@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -31,11 +30,13 @@ class MainActivity : ComponentActivity() {
     val profileViewModel by lazy {
         ViewModelProvider(this)[ProfileViewModel::class.java]
     }
+    val homeViewModel by lazy {
+        ViewModelProvider(this)[HomeViewmodel::class.java]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val homeViewModel: HomeViewmodel by viewModels()
 
         setContent {
             VuelingAppTheme {
@@ -92,7 +93,8 @@ class MainActivity : ComponentActivity() {
                     MainNavigationGraph(
                         navController = navController,
                         paddingValues = innerPadding,
-                        sharedProfileViewModel = profileViewModel // Pasa el ViewModel compartido
+                        sharedProfileViewModel = profileViewModel, // Pasa el ViewModel compartido
+                        sharedHomeViewModel = homeViewModel // Pasa el ViewModel compartido
 
                     )
                 }

@@ -19,13 +19,16 @@ import androidx.navigation.navigation
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.ProfileScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import androidx.activity.ComponentActivity
+import com.teniaTantoQueDarte.vuelingapp.ui.screen.HomeScreen
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainNavigationGraph(
     navController: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(0.dp),
-    sharedProfileViewModel: ProfileViewModel? = null
+    sharedProfileViewModel: ProfileViewModel? = null,
+    sharedHomeViewModel: HomeViewmodel? = null
 
 ) {
 
@@ -34,9 +37,14 @@ fun MainNavigationGraph(
         viewModelStoreOwner = context as ComponentActivity
     )
 
+    val homeViewmodel = sharedHomeViewModel ?: viewModel(
+        viewModelStoreOwner = context as ComponentActivity
+    )
+
+
     // Reduce la frecuencia de recomposición al recordar las secciones
     val homeSectionBuilder = remember(navController) { { builder: NavGraphBuilder ->
-        builder.HomeSection(navController)
+        builder.HomeSection(navController,homeViewmodel)
     }}
     val profileSectionBuilder = remember(navController, profileViewModel) { { builder: NavGraphBuilder ->
         builder.ProfileSection(navController, profileViewModel)
@@ -57,10 +65,14 @@ fun MainNavigationGraph(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.HomeSection(navController: NavHostController) {
+fun NavGraphBuilder.HomeSection(navController: NavHostController, viewModel: HomeViewmodel) {
+
     navigation<HomeCategory>(startDestination = HomeDestination) {
         composable<HomeDestination> {
-            // Tu HomeScreen aquí con modo de bajo consumo
+            HomeScreen(
+                viewmodel = viewModel
+            )
+
         }
     }
 }

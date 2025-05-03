@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
-import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingOrange
 
 // Lista estática temporal de vuelos favoritos
 // En una aplicación real, esto vendría de un ViewModel o repositorio
@@ -37,13 +36,13 @@ val favoriteFlights = listOf(
     FlightModel(
         ArriveTime = "18:15",
         DepartTime = "15:40",
-        Seat = "23F",
-        From = "Barcelona",
-        To = "Londres",
+        //Seat = "23F",
+        //From = "Barcelona",
+        //To = "Londres",
         FromShort = "BCN",
         ToShort = "LHR",
         Status = "Retrasado",
-        Reason = "Mal tiempo",
+        //Reason = "Mal tiempo",
         FlightNumber = "VY7842",
         updateTime = "17:45",
         favorito = true
@@ -51,13 +50,13 @@ val favoriteFlights = listOf(
     FlightModel(
         ArriveTime = "10:20",
         DepartTime = "09:45",
-        Seat = "16D",
-        From = "Valencia",
-        To = "Barcelona",
+       // Seat = "16D",
+       // From = "Valencia",
+       // To = "Barcelona",
         FromShort = "VLC",
         ToShort = "BCN",
         Status = "Delayed",
-        Reason = "IDK",
+        //Reason = "IDK",
         FlightNumber = "VY3421",
         updateTime = "10:00",
         favorito = true
@@ -76,8 +75,8 @@ fun FavoriteScreen() {
             favorites
         } else {
             favorites.filter { flight ->
-                flight.From.contains(searchQuery, ignoreCase = true) ||
-                flight.To.contains(searchQuery, ignoreCase = true) ||
+                //flight.From.contains(searchQuery, ignoreCase = true) ||
+                //flight.To.contains(searchQuery, ignoreCase = true) ||
                 flight.FromShort.contains(searchQuery, ignoreCase = true) ||
                 flight.ToShort.contains(searchQuery, ignoreCase = true) ||
                 flight.FlightNumber.contains(searchQuery, ignoreCase = true)

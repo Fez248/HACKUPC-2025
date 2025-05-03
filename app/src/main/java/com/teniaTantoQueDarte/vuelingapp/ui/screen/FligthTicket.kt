@@ -1,6 +1,5 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.screen
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import coil.compose.AsyncImage
 import com.teniaTantoQueDarte.vuelingapp.R
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
 import androidx.compose.ui.layout.ContentScale
@@ -35,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingOrange
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
 
 @Composable
@@ -74,15 +71,15 @@ fun FlightItem(item: FlightModel, index: Int){
         ) = createRefs()
 
         // COLUMNA ORIGEN - Izquierda
-        Text(
-            text = item.From,
-            fontSize = 14.sp,
-            color = Color(0xFF303336),
-            modifier = Modifier.constrainAs(fromTxt) {
-                top.linkTo(parent.top, margin = 16.dp)
-                start.linkTo(parent.start, margin = 16.dp)
-            }
-        )
+//        Text(
+//            text = item.From,
+//            fontSize = 14.sp,
+//            color = Color(0xFF303336),
+//            modifier = Modifier.constrainAs(fromTxt) {
+//                top.linkTo(parent.top, margin = 16.dp)
+//                start.linkTo(parent.start, margin = 16.dp)
+//            }
+//        )
 
         Text(
             text = item.FromShort,
@@ -90,8 +87,8 @@ fun FlightItem(item: FlightModel, index: Int){
             fontWeight = FontWeight.Bold,
             color = Color(0xFF303336),
             modifier = Modifier.constrainAs(fromShortTxt) {
-                top.linkTo(fromTxt.bottom, margin = 4.dp)
-                start.linkTo(fromTxt.start)
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(parent.start, margin = 16.dp)
             }
         )
 
@@ -102,7 +99,7 @@ fun FlightItem(item: FlightModel, index: Int){
             color = timeColor,  // Usar el color condicional
             modifier = Modifier.constrainAs(departTimeTxt) {
                 top.linkTo(fromShortTxt.bottom, margin = 4.dp)
-                start.linkTo(fromTxt.start)
+                start.linkTo(fromShortTxt.start)
             }
         )
 
@@ -122,15 +119,15 @@ fun FlightItem(item: FlightModel, index: Int){
         )
 
         // COLUMNA DESTINO - Derecha
-        Text(
-            text = item.To,
-            fontSize = 14.sp,
-            color = Color(0xFF303336),
-            modifier = Modifier.constrainAs(toTxt) {
-                top.linkTo(parent.top, margin = 16.dp)
-                end.linkTo(parent.end, margin = 16.dp)
-            }
-        )
+//        Text(
+//            text = item.To,
+//            fontSize = 14.sp,
+//            color = Color(0xFF303336),
+//            modifier = Modifier.constrainAs(toTxt) {
+//                top.linkTo(parent.top, margin = 16.dp)
+//                end.linkTo(parent.end, margin = 16.dp)
+//            }
+//        )
 
         Text(
             text = item.ToShort,
@@ -138,8 +135,8 @@ fun FlightItem(item: FlightModel, index: Int){
             fontWeight = FontWeight.Bold,
             color = Color(0xFF303336),
             modifier = Modifier.constrainAs(toShortTxt) {
-                top.linkTo(toTxt.bottom, margin = 4.dp)
-                end.linkTo(toTxt.end)
+                top.linkTo(parent.top, margin = 16.dp)
+                end.linkTo(parent.end, margin = 16.dp)
             }
         )
 
@@ -150,7 +147,7 @@ fun FlightItem(item: FlightModel, index: Int){
             color = timeColor,
             modifier = Modifier.constrainAs(arriveTimeTxt) {
                 top.linkTo(toShortTxt.bottom, margin = 4.dp)
-                end.linkTo(toTxt.end)
+                end.linkTo(toShortTxt.end)
             }
         )
 
@@ -216,7 +213,7 @@ fun FlightItem(item: FlightModel, index: Int){
 
 // Last update a la misma altura que Status
         Text(
-            text = "Last update:",
+            text = "Last update: " + item.updateTime,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
             color = Color(0xFF303336),
@@ -229,33 +226,33 @@ fun FlightItem(item: FlightModel, index: Int){
         )
 
 // Reason en el centro
-        Text(
-            text = item.Reason,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF303336),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.constrainAs(reasonTxt) {
-                top.linkTo(statusTxt.bottom, margin = 0.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom, margin = 10.dp)
-            }
-        )
+//        Text(
+//            text = item.Reason,
+//            fontSize = 14.sp,
+//            fontWeight = FontWeight.SemiBold,
+//            color = Color(0xFF303336),
+//            textAlign = TextAlign.Center,
+//            modifier = Modifier.constrainAs(reasonTxt) {
+//                top.linkTo(statusTxt.bottom, margin = 0.dp)
+//                start.linkTo(parent.start)
+//                end.linkTo(parent.end)
+//                bottom.linkTo(parent.bottom, margin = 10.dp)
+//            }
+//        )
 
 // Hora al mismo nivel que Reason
-        Text(
-            text = item.updateTime,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF303336),
-            textAlign = TextAlign.End,
-            modifier = Modifier.constrainAs(updateTimeTxt) {
-                top.linkTo(reasonTxt.top)
-                end.linkTo(lastUpdateLabelTxt.end)
-                baseline.linkTo(reasonTxt.baseline)
-            }
-        )
+//        Text(
+//            text = item.updateTime,
+//            fontSize = 12.sp,
+//            fontWeight = FontWeight.SemiBold,
+//            color = Color(0xFF303336),
+//            textAlign = TextAlign.End,
+//            modifier = Modifier.constrainAs(updateTimeTxt) {
+//                top.linkTo(statusTxt.bottom, margin = 0.dp)
+//                end.linkTo(parent.end, margin = 16.dp)
+//                baseline.linkTo(lastUpdateLabelTxt.baseline)
+//            }
+//        )
     }
 }
 
@@ -268,14 +265,10 @@ fun FlightItemPreview() {
             item = FlightModel(
                 ArriveTime = "12:00",
                 DepartTime = "10:00",
-                Seat = "1A",
-                From = "Barcelona",
-                To = "Madrid",
                 FromShort = "BCN",
                 ToShort = "MAD",
                 FlightNumber = "VY1234",
                 Status = "A tiempo",
-                Reason = "Sin retrasos",
                 updateTime = "11:00",
                 favorito = false
             ),
