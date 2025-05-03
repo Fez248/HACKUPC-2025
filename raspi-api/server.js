@@ -72,7 +72,7 @@ app.patch('/api/admin/:flightNumber/data', (req, res) => {
         return res.status(400).json({ error: 'Flight number cannot be modified' });
     }
 
-    const allowedFields = ['origin', 'destination', 'departureTime', 'arrivalTime', 'status', 'gate', 'door', 'terminal'];
+    const allowedFields = ['flightNumber', 'originFull', 'originShort', 'departureTime', 'destinationFull', 'destinationShort', 'landingTime', 'status', 'date'];
     for (const key of Object.keys(updates)) {
         if (allowedFields.includes(key)) {
             flight[key] = updates[key];
