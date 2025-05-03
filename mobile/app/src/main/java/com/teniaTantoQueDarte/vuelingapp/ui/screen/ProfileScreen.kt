@@ -1,6 +1,11 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.screen
 
+import android.app.Activity
 import android.app.Application
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,10 +26,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+//import android.app.Activity.startActivityForResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
+import androidx.appcompat.app.AppCompatActivity
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
@@ -44,7 +51,23 @@ fun ProfileScreen(
         )
     }
 
-
+    val context = LocalContext.current
+    LaunchedEffect(uiState.value.isSharingMode) {
+        val bluetoothManager: BluetoothManager = context.getSystemService(BluetoothManager::class.java)
+        val bluetoothAdapter: BluetoothAdapter? = bluetoothManager.getAdapter()
+        if (bluetoothAdapter == null) {
+            viewModel.toggleSharingMode(false)
+        }
+        else if (bluetoothAdapter?.isEnabled == false) {
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    // your operation...
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier

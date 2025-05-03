@@ -1,6 +1,9 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.viewmodel
 
 import android.app.Application
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
@@ -45,7 +48,20 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(isSharingMode = isSharing) }
             }
+
+            if (isSharing) {
+                val bluetoothAdapter: BluetoothAdapter? =
+                    getApplication<Application>().getSystemService(BluetoothManager::class.java)?.adapter
+
+                /*if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
+                    _eventFlow.emit(ProfileEvent.RequestBluetoothEnable)
+                }*/
+            }
         }
+    }
+
+    sealed class ProfileEvent {
+        object RequestBluetoothEnable : ProfileEvent()
     }
 
     fun loadUserData() {
