@@ -21,6 +21,7 @@ import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import androidx.activity.ComponentActivity
 import com.teniaTantoQueDarte.vuelingapp.ui.screen.HomeScreen
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -28,7 +29,8 @@ fun MainNavigationGraph(
     navController: NavHostController = rememberNavController(),
     paddingValues: PaddingValues = PaddingValues(0.dp),
     sharedProfileViewModel: ProfileViewModel? = null,
-    sharedHomeViewModel: HomeViewmodel? = null
+    sharedHomeViewModel: HomeViewmodel? = null,
+    sharedNewsViewModel: NewsViewModel? = null
 
 ) {
 
@@ -38,6 +40,10 @@ fun MainNavigationGraph(
     )
 
     val homeViewmodel = sharedHomeViewModel ?: viewModel(
+        viewModelStoreOwner = context as ComponentActivity
+    )
+
+    val NewsViewModel = sharedNewsViewModel ?: viewModel(
         viewModelStoreOwner = context as ComponentActivity
     )
 
@@ -52,6 +58,9 @@ fun MainNavigationGraph(
     val favouritesSectionBuilder = remember(navController) { { builder: NavGraphBuilder ->
         builder.FavouritesSection(navController)
     }}
+    val newsSectionBuilder = remember(navController, NewsViewModel) { { builder: NavGraphBuilder ->
+        builder.NewsSection(navController, NewsViewModel)
+    }}
 
     NavHost(
         navController = navController,
@@ -61,6 +70,7 @@ fun MainNavigationGraph(
         homeSectionBuilder(this)
         profileSectionBuilder(this)
         favouritesSectionBuilder(this)
+        newsSectionBuilder(this)
     }
 }
 
@@ -92,6 +102,14 @@ fun NavGraphBuilder.FavouritesSection(navController: NavHostController) {
     navigation<FavouritesCategory>(startDestination = FavouritesDestination) {
         composable<FavouritesDestination> {
             // Tu FavouritesScreen aquí
+        }
+    }
+}
+
+fun NavGraphBuilder.NewsSection(navController: NavHostController, viewModel: NewsViewModel) {
+    navigation<NewsCategory>(startDestination = NewsDestination) {
+        composable<NewsDestination> {
+            NewsScreen(viewModel = viewModel)
         }
     }
 }
