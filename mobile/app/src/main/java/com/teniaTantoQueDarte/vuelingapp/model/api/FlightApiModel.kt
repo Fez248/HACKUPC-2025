@@ -22,5 +22,7 @@ data class FlightApiModel(
     @SerialName("gate")
     val gate: String,
     @SerialName("terminal")
-    val terminal: String
+    val terminal: String,
+    @SerialName("signature")
+    val signature: String
 )

@@ -23,9 +23,13 @@ import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
 import androidx.lifecycle.ViewModelProvider
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
+import androidx.work.Configuration
+import androidx.work.WorkManager
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
+
 
     val profileViewModel by lazy {
         ViewModelProvider(this)[ProfileViewModel::class.java]
@@ -36,6 +40,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NetworkSyncWorker.schedulePeriodic(applicationContext)
 
 
         setContent {
@@ -101,7 +106,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        NetworkSyncWorker.schedulePeriodic(applicationContext)
     }
 }
 

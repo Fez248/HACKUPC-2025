@@ -9,7 +9,7 @@ import androidx.work.WorkManager
 class WorkManagerInitializer : Initializer<WorkManager> {
     override fun create(context: Context): WorkManager {
         val config = Configuration.Builder()
-            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .setMinimumLoggingLevel(android.util.Log.VERBOSE)
             .build()
 
         WorkManager.initialize(context, config)
