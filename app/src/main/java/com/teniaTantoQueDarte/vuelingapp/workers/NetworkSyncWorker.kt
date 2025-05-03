@@ -8,6 +8,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.BackoffPolicy
+import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
+import com.teniaTantoQueDarte.vuelingapp.utils.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
@@ -55,5 +57,36 @@ class NetworkSyncWorker(
         fun cancel(context: Context) {
             WorkManager.getInstance(context).cancelUniqueWork(SYNC_WORK_NAME)
         }
+    }
+}
+
+
+// En NetworkSyncWorker.kt
+class DataSyncWorker(
+    context: Context,
+    params: WorkerParameters
+) : CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result {
+        val repository = UserRepository(applicationContext)
+        return try {
+            // Usar PreferenceManager para decidir si sincronizar
+            if (shouldSync()) {
+                repository.executeInTransaction {
+                    repository.updateUserStats()
+                    repository.cleanupOldData()
+                }
+                // Guardar tiempo de sincronización
+                PreferenceManager.setLastSyncTime(applicationContext, System.currentTimeMillis())
+            }
+            Result.success()
+        } catch (e: Exception) {
+            if (runAttemptCount < 3) Result.retry() else Result.failure()
+        }
+    }
+
+    private suspend fun shouldSync(): Boolean {
+        val lastSync = PreferenceManager.getLastSyncTime(applicationContext)
+        return System.currentTimeMillis() - lastSync > TimeUnit.HOURS.toMillis(2)
     }
 }

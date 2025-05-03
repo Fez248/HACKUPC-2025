@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "users")
 data class User(
-    @PrimaryKey val id: String = "main_user",
+    @PrimaryKey val id: Int = 1, // Usuario único por app
     val points: Int = 0,
-    val isSharingMode: Boolean = false
+    val isSharingMode: Boolean = false,
+    val lastSync: Long? = null // Campo para tracking de última sincronización
 )

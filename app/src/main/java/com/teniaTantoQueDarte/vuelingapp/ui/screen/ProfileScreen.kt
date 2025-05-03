@@ -12,6 +12,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,13 +36,15 @@ fun ProfileScreen(
     // Optimizamos usando collectAsStateWithLifecycle para mejor rendimiento
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    // No necesitamos LaunchedEffect porque loadUserData ya se llama en el init del ViewModel
-    // pero si queremos refrescar manualmente podemos descomentar:
-    /*
-    LaunchedEffect(key1 = Unit) {
-        viewModel.loadUserData()
+    val displayData = remember(uiState) {
+        // Procesar datos una sola vez por cada cambio de estado
+        ProfileDisplayData(
+            formattedPoints = "${uiState.value.points} pts",
+            isSharing = uiState.value.isSharingMode
+        )
     }
-    */
+
+
 
     Column(
         modifier = Modifier
@@ -112,6 +116,14 @@ class ProfileViewModelFactory(private val application: Application) : ViewModelP
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+
+
+private data class ProfileDisplayData(
+    val formattedPoints: String,
+    val isSharing: Boolean
+)
+
+
 @Preview
 @Composable
 fun ProfileScreenPreview() {

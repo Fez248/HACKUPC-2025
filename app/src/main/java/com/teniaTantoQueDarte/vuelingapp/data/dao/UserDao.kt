@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM users WHERE id = :userId")
-    fun getUserById(userId: String = "main_user"): Flow<User?>
+    @Query("SELECT * FROM users WHERE id = 1")
+    fun getUserById(): Flow<User?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(user: User)
@@ -19,9 +19,11 @@ interface UserDao {
     @Update
     suspend fun updateUser(user: User)
 
-    @Query("UPDATE users SET isSharingMode = :isSharing WHERE id = :userId")
-    suspend fun updateSharingMode(userId: String = "main_user", isSharing: Boolean)
+    @Query("UPDATE users SET isSharingMode = :isSharing WHERE id = 1")
+    suspend fun updateSharingMode(isSharing: Boolean)
 
-    @Query("UPDATE users SET points = :points WHERE id = :userId")
-    suspend fun updatePoints(userId: String = "main_user", points: Int)
+    // Método optimizado para limpieza - solo actualiza en lugar de borrar
+    @Query("UPDATE users SET lastSync = :newTimestamp WHERE lastSync < :threshold AND lastSync IS NOT NULL")
+    suspend fun updateOldRecords(threshold: Long, newTimestamp: Long): Int
+
 }

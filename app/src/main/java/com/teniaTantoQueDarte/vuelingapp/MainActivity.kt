@@ -12,6 +12,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -28,6 +30,13 @@ import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
 
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onStart(owner: LifecycleOwner) {
+            super.onStart(owner)
+            profileViewModel.performBatchDatabaseOperations()
+        }
+    }
+
     val profileViewModel by lazy {
         ViewModelProvider(this)[ProfileViewModel::class.java]
     }
@@ -36,6 +45,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val homeViewModel: HomeViewmodel by viewModels()
+        lifecycle.addObserver(lifecycleObserver)
+
 
         setContent {
             VuelingAppTheme {
@@ -100,6 +111,11 @@ class MainActivity : ComponentActivity() {
         }
 
         NetworkSyncWorker.schedulePeriodic(applicationContext)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(lifecycleObserver)
     }
 }
 
