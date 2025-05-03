@@ -1,29 +1,23 @@
 [
-    {
-        "flightNumber": "AA123",
-        "airline": "American Airlines",
-        "status": "Delayed",
-        "departure_time": "2023-10-01T14:30:00Z",
-        "arrival_time": "2023-10-01T18:45:00Z",
-        "last_updated": "2023-10-01T13:00:00Z",
-        "reason": "Weather conditions"
-    },
-    {
-        "flightNumber": "DL456",
-        "airline": "Delta Airlines",
-        "status": "On Time",
-        "departure_time": "2023-10-01T16:00:00Z",
-        "arrival_time": "2023-10-01T20:15:00Z",
-        "last_updated": "2023-10-01T12:00:00Z",
-        "reason": null
-    },
-    {
-        "flightNumber": "UA789",
-        "airline": "United Airlines",
-        "status": "Cancelled",
-        "departure_time": "2023-10-01T10:00:00Z",
-        "arrival_time": "2023-10-01T14:30:00Z",
-        "last_updated": "2023-10-01T09:30:00Z",
-        "reason": "Technical issues"
-    }
+  {
+    "id": "news001",
+    "flightNumber": "DL456",
+    "title": "New Route Announced",
+    "content": "A new route from NYC to Tokyo has been announced.",
+    "date": "2025-05-01T10:00:00Z"
+  },
+  {
+    "id": "news002",
+    "flightNumber": "DL454",
+    "title": "Delay Notice",
+    "content": "Flight DL454 will be delayed by 2 hours due to weather.",
+    "date": "2025-05-02T12:00:00Z"
+  },
+  {
+    "id": "news003",
+    "flightNumber": "UA123",
+    "title": "Gate Changed",
+    "content": "Flight UA123 will now depart from Gate G4.",
+    "date": "2025-05-cscsvsv0:00Z"
+  }
 ]
