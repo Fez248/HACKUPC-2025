@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -12,8 +11,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -30,22 +27,15 @@ import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
 
-    private val lifecycleObserver = object : DefaultLifecycleObserver {
-        override fun onStart(owner: LifecycleOwner) {
-            super.onStart(owner)
-            profileViewModel.performBatchDatabaseOperations()
-        }
-    }
-
     val profileViewModel by lazy {
         ViewModelProvider(this)[ProfileViewModel::class.java]
+    }
+    val homeViewModel by lazy {
+        ViewModelProvider(this)[HomeViewmodel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val homeViewModel: HomeViewmodel by viewModels()
-        lifecycle.addObserver(lifecycleObserver)
 
 
         setContent {
@@ -103,7 +93,8 @@ class MainActivity : ComponentActivity() {
                     MainNavigationGraph(
                         navController = navController,
                         paddingValues = innerPadding,
-                        sharedProfileViewModel = profileViewModel // Pasa el ViewModel compartido
+                        sharedProfileViewModel = profileViewModel, // Pasa el ViewModel compartido
+                        sharedHomeViewModel = homeViewModel // Pasa el ViewModel compartido
 
                     )
                 }
@@ -111,11 +102,6 @@ class MainActivity : ComponentActivity() {
         }
 
         NetworkSyncWorker.schedulePeriodic(applicationContext)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycle.removeObserver(lifecycleObserver)
     }
 }
 

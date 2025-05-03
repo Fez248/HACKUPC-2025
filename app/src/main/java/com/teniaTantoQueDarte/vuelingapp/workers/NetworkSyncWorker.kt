@@ -4,58 +4,83 @@ package com.teniaTantoQueDarte.vuelingapp.workers
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.BackoffPolicy
+import androidx.work.NetworkType
+import androidx.work.Constraints
+import androidx.work.workDataOf
+import com.google.gson.Gson
 import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
 import com.teniaTantoQueDarte.vuelingapp.utils.PreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
+import com.teniaTantoQueDarte.vuelingapp.utils.RetrofitClient
 
 class NetworkSyncWorker(
     appContext: Context,
     workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
 
-    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        try {
-            // Aquí realizas las operaciones de red agrupadas
-            // Por ejemplo: sincronización de datos, comprobar actualizaciones, etc.
-
-            Result.success()
-        } catch (e: Exception) {
-            // Implementa backoff exponencial automáticamente
-            Result.retry()
-        }
-    }
-
     companion object {
-        private const val SYNC_WORK_NAME = "network_sync_work"
+        const val SYNC_WORK_NAME = "network_sync_work"
+        const val KEY_FLIGHTS_JSON = "flights_json"
 
-        // Programa la ejecución periódica
         fun schedulePeriodic(context: Context) {
-            val syncRequest = PeriodicWorkRequestBuilder<NetworkSyncWorker>(
-                15, TimeUnit.MINUTES,  // Frecuencia mínima
-                5, TimeUnit.MINUTES    // Ventana flexible
-            )
+            val constraints = Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build()
+
+            val request = OneTimeWorkRequestBuilder<NetworkSyncWorker>()
+                .setConstraints(constraints)
                 .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,  // Backoff exponencial
-                    30, TimeUnit.SECONDS        // Duración inicial
+                    BackoffPolicy.EXPONENTIAL,
+                    30, TimeUnit.SECONDS
                 )
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                SYNC_WORK_NAME,
-                ExistingPeriodicWorkPolicy.UPDATE,
-                syncRequest
-            )
+            WorkManager.getInstance(context)
+                .enqueueUniqueWork(
+                    SYNC_WORK_NAME,
+                    ExistingWorkPolicy.REPLACE,
+                    request
+                )
         }
+    }
 
-        // Cancela el trabajo si es necesario
-        fun cancel(context: Context) {
-            WorkManager.getInstance(context).cancelUniqueWork(SYNC_WORK_NAME)
+    override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
+        return@withContext try {
+            // 1️⃣ Retrofit call
+            val flights: List<FlightModel> = RetrofitClient.apiService.getFlights().map { apiModel ->
+                FlightModel(
+                    ArriveTime = apiModel.arrivalTime,
+                    DepartTime = apiModel.departureTime,
+                    FromShort = apiModel.origin,
+                    ToShort = apiModel.destination,
+                    Status = apiModel.status,
+                    FlightNumber = apiModel.flightNumber,
+                    updateTime = System.currentTimeMillis().toString(),
+                    favorito = true,
+                )
+            }
+
+            // 2️⃣ Serialize to JSON
+            val json = Gson().toJson(flights)
+
+            // 3️⃣ Return as outputData
+            val result = Result.success(workDataOf(KEY_FLIGHTS_JSON to json))
+
+            // Schedule the next execution (for frequent updates)
+            schedulePeriodic(applicationContext)
+
+            result
+        } catch (e: Exception) {
+            // Log the exception for debugging
+            e.printStackTrace()
+            Result.retry()
         }
     }
 }
