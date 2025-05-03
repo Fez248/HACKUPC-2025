@@ -1,0 +1,29 @@
+[
+    {
+        "flightNumber": "AA123",
+        "airline": "American Airlines",
+        "status": "Delayed",
+        "departure_time": "2023-10-01T14:30:00Z",
+        "arrival_time": "2023-10-01T18:45:00Z",
+        "last_updated": "2023-10-01T13:00:00Z",
+        "reason": "Weather conditions"
+    },
+    {
+        "flightNumber": "DL456",
+        "airline": "Delta Airlines",
+        "status": "On Time",
+        "departure_time": "2023-10-01T16:00:00Z",
+        "arrival_time": "2023-10-01T20:15:00Z",
+        "last_updated": "2023-10-01T12:00:00Z",
+        "reason": null
+    },
+    {
+        "flightNumber": "UA789",
+        "airline": "United Airlines",
+        "status": "Cancelled",
+        "departure_time": "2023-10-01T10:00:00Z",
+        "arrival_time": "2023-10-01T14:30:00Z",
+        "last_updated": "2023-10-01T09:30:00Z",
+        "reason": "Technical issues"
+    }
+]
