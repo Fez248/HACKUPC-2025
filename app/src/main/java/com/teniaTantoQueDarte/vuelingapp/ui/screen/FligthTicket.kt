@@ -154,22 +154,23 @@ fun FlightItem(item: FlightModel, index: Int){
             fontWeight = FontWeight.Bold,
             color = Color(0xFF303336),
             modifier = Modifier.constrainAs(flightNumberTxt) {
-                top.linkTo(dashLine.bottom, margin = 8.dp) // Reducido de 16.dp a 8.dp
+                top.linkTo(dashLine.bottom, margin = 8.dp)
                 start.linkTo(parent.start, margin = 16.dp)
                 bottom.linkTo(parent.bottom, margin = 16.dp)
             }
         )
 
+// Status y Reason en columna central (con menos espacio entre ellos)
         Text(
             text = item.Status,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF303336),
+            textAlign = TextAlign.Center,
             modifier = Modifier.constrainAs(statusTxt) {
-                top.linkTo(flightNumberTxt.top)
+                top.linkTo(dashLine.bottom, margin = 8.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                bottom.linkTo(flightNumberTxt.bottom)
             }
         )
 
@@ -178,10 +179,12 @@ fun FlightItem(item: FlightModel, index: Int){
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             color = Color(0xFF303336),
+            textAlign = TextAlign.Center,
             modifier = Modifier.constrainAs(reasonTxt) {
-                top.linkTo(flightNumberTxt.top)
-                end.linkTo(parent.end, margin = 16.dp)
-                bottom.linkTo(flightNumberTxt.bottom)
+                top.linkTo(statusTxt.bottom, margin = 0.dp) // Reducido de 4.dp a 2.dp
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom, margin = 10.dp)
             }
         )
     }
@@ -203,7 +206,8 @@ fun FlightItemPreview() {
                 ToShort = "MAD",
                 FlightNumber = "VY1234",
                 Status = "A tiempo",
-                Reason = "Sin retrasos"
+                Reason = "Sin retrasos",
+                updateTime = "2023-10-01T12:00:00Z"
             ),
             index = 0
         )

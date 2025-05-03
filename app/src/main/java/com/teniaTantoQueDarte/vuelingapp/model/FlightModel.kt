@@ -10,5 +10,6 @@ data class FlightModel(
     val ToShort: String,
     val Status: String,
     val Reason: String,
-    val FlightNumber: String
+    val FlightNumber: String,
+    val updateTime: String
 )
