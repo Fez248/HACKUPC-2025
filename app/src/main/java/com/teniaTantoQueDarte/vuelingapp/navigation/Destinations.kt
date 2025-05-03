@@ -32,11 +32,16 @@ object FavouritesDestination
 
 
 data class NavigationCategory<T:Any>(val route:T, val icon:ImageVector, val selectedIcon:ImageVector, val title:String)
-val navigationCategories = listOf(
-    NavigationCategory(route = HomeCategory, icon = Icons.Outlined.Home, selectedIcon = Icons.Filled.Home, title = "Home"),
-    NavigationCategory(route = FavouritesCategory, icon = Icons.Outlined.FavoriteBorder, selectedIcon = Icons.Filled.Favorite, title = "Favourites"),
-    NavigationCategory(route = ProfileCategory, icon = Icons.Outlined.Person, selectedIcon = Icons.Filled.Person, title = "Profile"),
-)
+val navigationCategories by lazy {
+    listOf(
+        NavigationCategory(route = HomeCategory, icon = Icons.Outlined.Home,
+            selectedIcon = Icons.Filled.Home, title = "Home"),
+        NavigationCategory(route = FavouritesCategory, icon = Icons.Outlined.FavoriteBorder,
+            selectedIcon = Icons.Filled.Favorite, title = "Favourites"),
+        NavigationCategory(route = ProfileCategory, icon = Icons.Outlined.Person,
+            selectedIcon = Icons.Filled.Person, title = "Profile")
+    )
+}
 
 @Serializable
 object HomeCategory

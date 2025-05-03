@@ -68,5 +68,5 @@ dependencies {
     kapt("androidx.room:room-compiler:$roomVersion") // Cambiar ksp por kapt
 
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
-
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 }

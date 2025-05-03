@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -19,12 +20,22 @@ import androidx.navigation.compose.rememberNavController
 import com.teniaTantoQueDarte.vuelingapp.navigation.MainNavigationGraph
 import com.teniaTantoQueDarte.vuelingapp.navigation.navigationCategories
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
-
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
+import androidx.lifecycle.ViewModelProvider
+import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
+import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
 
 @RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
+
+    val profileViewModel by lazy {
+        ViewModelProvider(this)[ProfileViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val homeViewModel: HomeViewmodel by viewModels()
 
         setContent {
             VuelingAppTheme {
@@ -80,11 +91,15 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     MainNavigationGraph(
                         navController = navController,
-                        paddingValues = innerPadding
+                        paddingValues = innerPadding,
+                        sharedProfileViewModel = profileViewModel // Pasa el ViewModel compartido
+
                     )
                 }
             }
         }
+
+        NetworkSyncWorker.schedulePeriodic(applicationContext)
     }
 }
 

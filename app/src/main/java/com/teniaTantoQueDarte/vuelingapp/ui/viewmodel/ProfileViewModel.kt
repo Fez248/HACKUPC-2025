@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 data class ProfileUiState(
     val points: Int = 0,
@@ -55,5 +56,28 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 }
             }
         }
+    }
+
+    // En ProfileViewModel.kt, añade esta función:
+    fun performBatchedOperations() {
+        // Solo actualizamos si han pasado más de 5 minutos desde la última actualización
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastSyncTime > TimeUnit.MINUTES.toMillis(5)) {
+            lastSyncTime = currentTime
+
+            viewModelScope.launch {
+                // Aquí agrupamos todas las operaciones que requieran red
+                //repository.syncAllUserData() // Método que realiza múltiples operaciones en batch
+            }
+        }
+    }
+
+    // Añade esta variable para controlar frecuencia
+    private var lastSyncTime = 0L
+
+    // Añade al onCleared():
+    override fun onCleared() {
+        super.onCleared()
+        // Limpieza de recursos
     }
 }
