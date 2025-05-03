@@ -20,5 +20,203 @@
     "door": "B2",
     "gate": "Contarte",
     "terminal": "T2"
+  },
+  {
+    "flightNumber": "AA789",
+    "origin": "ORD",
+    "destination": "MIA",
+    "departureTime": "2025-05-11T10:00:00Z",
+    "arrivalTime": "2025-05-11T14:00:00Z",
+    "status": "Scheduled",
+    "door": "C3",
+    "gate": "Gate12",
+    "terminal": "T3"
+  },
+  {
+    "flightNumber": "SW123",
+    "origin": "LAX",
+    "destination": "LAS",
+    "departureTime": "2025-05-11T12:00:00Z",
+    "arrivalTime": "2025-05-11T13:00:00Z",
+    "status": "On Time",
+    "door": "D4",
+    "gate": "Gate5",
+    "terminal": "T4"
+  },
+  {
+    "flightNumber": "BA456",
+    "origin": "LHR",
+    "destination": "JFK",
+    "departureTime": "2025-05-12T15:00:00Z",
+    "arrivalTime": "2025-05-12T18:00:00Z",
+    "status": "Scheduled",
+    "door": "E5",
+    "gate": "Gate9",
+    "terminal": "T5"
+  },
+  {
+    "flightNumber": "AF789",
+    "origin": "CDG",
+    "destination": "SFO",
+    "departureTime": "2025-05-12T08:00:00Z",
+    "arrivalTime": "2025-05-12T16:00:00Z",
+    "status": "Delayed",
+    "door": "F6",
+    "gate": "Gate3",
+    "terminal": "T6"
+  },
+  {
+    "flightNumber": "LH123",
+    "origin": "FRA",
+    "destination": "ORD",
+    "departureTime": "2025-05-13T07:00:00Z",
+    "arrivalTime": "2025-05-13T15:00:00Z",
+    "status": "Scheduled",
+    "door": "G7",
+    "gate": "Gate8",
+    "terminal": "T7"
+  },
+  {
+    "flightNumber": "EK456",
+    "origin": "DXB",
+    "destination": "LAX",
+    "departureTime": "2025-05-13T22:00:00Z",
+    "arrivalTime": "2025-05-14T06:00:00Z",
+    "status": "On Time",
+    "door": "H8",
+    "gate": "Gate4",
+    "terminal": "T8"
+  },
+  {
+    "flightNumber": "QF789",
+    "origin": "SYD",
+    "destination": "DFW",
+    "departureTime": "2025-05-14T12:00:00Z",
+    "arrivalTime": "2025-05-14T20:00:00Z",
+    "status": "Scheduled",
+    "door": "I9",
+    "gate": "Gate7",
+    "terminal": "T9"
+  },
+  {
+    "flightNumber": "CX123",
+    "origin": "HKG",
+    "destination": "SFO",
+    "departureTime": "2025-05-14T18:00:00Z",
+    "arrivalTime": "2025-05-15T02:00:00Z",
+    "status": "Delayed",
+    "door": "J10",
+    "gate": "Gate6",
+    "terminal": "T10"
+  },
+  {
+    "flightNumber": "SQ456",
+    "origin": "SIN",
+    "destination": "LAX",
+    "departureTime": "2025-05-15T23:00:00Z",
+    "arrivalTime": "2025-05-16T07:00:00Z",
+    "status": "Scheduled",
+    "door": "K11",
+    "gate": "Gate2",
+    "terminal": "T11"
+  },
+  {
+    "flightNumber": "NZ789",
+    "origin": "AKL",
+    "destination": "LAX",
+    "departureTime": "2025-05-16T01:00:00Z",
+    "arrivalTime": "2025-05-16T09:00:00Z",
+    "status": "On Time",
+    "door": "L12",
+    "gate": "Gate1",
+    "terminal": "T12"
+  },
+  {
+    "flightNumber": "JL123",
+    "origin": "NRT",
+    "destination": "SEA",
+    "departureTime": "2025-05-16T10:00:00Z",
+    "arrivalTime": "2025-05-16T18:00:00Z",
+    "status": "Scheduled",
+    "door": "M13",
+    "gate": "Gate11",
+    "terminal": "T13"
+  },
+  {
+    "flightNumber": "KE456",
+    "origin": "ICN",
+    "destination": "ATL",
+    "departureTime": "2025-05-17T05:00:00Z",
+    "arrivalTime": "2025-05-17T13:00:00Z",
+    "status": "Delayed",
+    "door": "N14",
+    "gate": "Gate10",
+    "terminal": "T14"
+  },
+  {
+    "flightNumber": "MH789",
+    "origin": "KUL",
+    "destination": "LHR",
+    "departureTime": "2025-05-17T20:00:00Z",
+    "arrivalTime": "2025-05-18T04:00:00Z",
+    "status": "Scheduled",
+    "door": "O15",
+    "gate": "Gate13",
+    "terminal": "T15"
+  },
+  {
+    "flightNumber": "AI123",
+    "origin": "DEL",
+    "destination": "EWR",
+    "departureTime": "2025-05-18T02:00:00Z",
+    "arrivalTime": "2025-05-18T10:00:00Z",
+    "status": "On Time",
+    "door": "P16",
+    "gate": "Gate14",
+    "terminal": "T16"
+  },
+  {
+    "flightNumber": "TK456",
+    "origin": "IST",
+    "destination": "ORD",
+    "departureTime": "2025-05-18T14:00:00Z",
+    "arrivalTime": "2025-05-18T22:00:00Z",
+    "status": "Scheduled",
+    "door": "Q17",
+    "gate": "Gate15",
+    "terminal": "T17"
+  },
+  {
+    "flightNumber": "ET789",
+    "origin": "ADD",
+    "destination": "IAD",
+    "departureTime": "2025-05-19T06:00:00Z",
+    "arrivalTime": "2025-05-19T14:00:00Z",
+    "status": "Delayed",
+    "door": "R18",
+    "gate": "Gate16",
+    "terminal": "T18"
+  },
+  {
+    "flightNumber": "SA123",
+    "origin": "JNB",
+    "destination": "LHR",
+    "departureTime": "2025-05-19T18:00:00Z",
+    "arrivalTime": "2025-05-20T02:00:00Z",
+    "status": "Scheduled",
+    "door": "S19",
+    "gate": "Gate17",
+    "terminal": "T19"
+  },
+  {
+    "flightNumber": "VS456",
+    "origin": "LHR",
+    "destination": "JFK",
+    "departureTime": "2025-05-20T09:00:00Z",
+    "arrivalTime": "2025-05-20T13:00:00Z",
+    "status": "On Time",
+    "door": "T20",
+    "gate": "Gate18",
+    "terminal": "T20"
   }
 ]
