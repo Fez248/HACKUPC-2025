@@ -22,6 +22,9 @@ interface UserDao {
     @Query("UPDATE users SET isSharingMode = :isSharing WHERE id = 1")
     suspend fun updateSharingMode(isSharing: Boolean)
 
+    @Query("UPDATE users SET points = points + :points WHERE id = 1")
+    suspend fun addPoints(points: Int)
+
     // Método optimizado para limpieza - solo actualiza en lugar de borrar
     @Query("UPDATE users SET lastSync = :newTimestamp WHERE lastSync < :threshold AND lastSync IS NOT NULL")
     suspend fun updateOldRecords(threshold: Long, newTimestamp: Long): Int

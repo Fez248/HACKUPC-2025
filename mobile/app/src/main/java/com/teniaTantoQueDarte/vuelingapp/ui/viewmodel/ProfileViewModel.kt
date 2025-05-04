@@ -40,6 +40,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     val context = getApplication<Application>().applicationContext
 
+    // Add these to your ProfileViewModel class
+    private var lastPointsAddedTime = 0L
+    private val POINTS_COOLDOWN_MS = 60000L // 1 minute cooldown
+
     private var bluetoothManager: BTManager? = null;
 
     // Control de frecuencia para operaciones batch
@@ -55,19 +59,60 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     fun setSharingMode(isSharing: Boolean) {
         if (_uiState.value.isSharingMode == isSharing) return
-        if(!permissionsState.value) {
-            //TODO: Alerta al usuario de que no tiene permisos y que ha de cambiarlos manualmente
+        if (!permissionsState.value) {
             return
         }
 
         ioScope.launch {
             repository.toggleSharingMode(isSharing)
-            // Actualiza UI en Main dispatcher
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(isSharingMode = isSharing) }
+                if (isSharing) {
+                    startAddingPointsPeriodically()
+                } else {
+                    stopAddingPointsPeriodically()
+                }
             }
         }
     }
+
+    fun addPointsWithCooldown(points: Int = 5) {
+        val currentTime = System.currentTimeMillis()
+
+        // Only add points if cooldown period has passed
+        if (currentTime - lastPointsAddedTime > POINTS_COOLDOWN_MS) {
+            ioScope.launch {
+                // Assuming repository has this method - add it if needed
+                repository.addPoints(points)
+                lastPointsAddedTime = currentTime
+                withContext(Dispatchers.Main) {
+                    _uiState.update { it.copy(points = points) }
+                }
+            }
+        }
+    }
+
+    private var pointsJob: Job? = null
+
+    fun startAddingPointsPeriodically(points: Int = 10) {
+        if (pointsJob != null) return // Evita múltiples trabajos
+
+        pointsJob = ioScope.launch {
+            while (isActive) {
+                delay(5 * 10 * 1000) // 5 minutos
+                repository.addPoints(points)
+                withContext(Dispatchers.Main) {
+                    _uiState.update { it.copy(points = _uiState.value.points + points) }
+                }
+            }
+        }
+    }
+
+    fun stopAddingPointsPeriodically() {
+        pointsJob?.cancel()
+        pointsJob = null
+    }
+
 
     fun setPermissionsState(isGranted: Boolean) {
         _permissionsState.value = isGranted

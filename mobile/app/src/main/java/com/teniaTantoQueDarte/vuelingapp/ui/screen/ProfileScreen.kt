@@ -235,6 +235,10 @@ fun ProfileScreen(
                         viewModel.setSharingMode(false)
                         return@Switch
                     }
+                    // Add points when enabling sharing mode
+                    if (!uiState.value.isSharingMode) {
+                        viewModel.addPointsWithCooldown()
+                    }
                     viewModel.setSharingMode(!uiState.value.isSharingMode) }
             )
         }

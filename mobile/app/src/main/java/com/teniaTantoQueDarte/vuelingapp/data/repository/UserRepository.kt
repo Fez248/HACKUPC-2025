@@ -46,6 +46,12 @@ class UserRepository(private val context: Context) {
         flushUpdatesIfNeeded()
     }
 
+    suspend fun addPoints(points: Int) {
+        val currentTime = System.currentTimeMillis()
+        queueUpdate("points", points)
+        flushUpdatesIfNeeded()
+    }
+
     suspend fun setBatteryStatus(isMoreBattery: Boolean) {
         // Utiliza el sistema de batch updates
         queueUpdate("battery", isMoreBattery)
@@ -93,7 +99,10 @@ class UserRepository(private val context: Context) {
                     "battery" -> {
                         updatedUser = updatedUser.copy(moreBatteryGuy = value as Boolean)
                     }
-                    // Agregar otros campos según necesidad
+                    "points" -> {
+                        userDao.addPoints(value as Int)
+                        updatedUser = updatedUser.copy(points = user.points + value)
+                    }
                 }
             }
 
