@@ -1,10 +1,16 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.viewmodel
 
+import android.Manifest
 import android.app.Application
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.content.pm.PackageManager
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
+import com.teniaTantoQueDarte.vuelingapp.services.bluetooth.BTManager
+import com.teniaTantoQueDarte.vuelingapp.services.bluetooth.BluetoothConnectionCallback
 import com.teniaTantoQueDarte.vuelingapp.utils.PreferenceManager
 import com.teniaTantoQueDarte.vuelingapp.utils.WakeLockManager
 import kotlinx.coroutines.*
@@ -34,21 +40,23 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     val context = getApplication<Application>().applicationContext
 
-    private var bluetoothManager: BluetoothManager? = null;
+    private var bluetoothManager: BTManager? = null;
 
     // Control de frecuencia para operaciones batch
     private var lastBatchOperationTime = 0L
 
     init {
-        // Carga inicial diferida para no bloquear el arranque
         loadUserData()
     }
 
+    fun hasBluetoothSupport(): Boolean {
+        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
+    }
+
     fun setSharingMode(isSharing: Boolean) {
-        // Evita operaciones redundantes
         if (_uiState.value.isSharingMode == isSharing) return
         if(!permissionsState.value) {
-            // Si no se han concedido permisos, no se puede cambiar el modo
+            //TODO: Alerta al usuario de que no tiene permisos y que ha de cambiarlos manualmente
             return
         }
 
@@ -66,7 +74,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun setBluetoothManager(manager: BluetoothManager) {
-        bluetoothManager = manager
+        if (bluetoothManager != null) return
+        bluetoothManager = BTManager.getInstance(context, manager)
     }
 
     fun setBatteryStatus(isMoreBattery: Boolean) {
@@ -80,6 +89,59 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 _uiState.update { it.copy(moreBatteryGuy = isMoreBattery) }
             }
         }
+    }
+
+    annotation class ConnectionParams () {}
+
+    @RequiresPermission(Manifest.permission.BLUETOOTH_ADVERTISE)
+    fun startServer(deviceName: String) {
+        if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_ADVERTISE) != PackageManager.PERMISSION_GRANTED) {
+            // Handle missing permission (e.g., log or notify the user)
+            return
+        }
+
+        bluetoothManager?.startServer(deviceName, object : BluetoothConnectionCallback {
+            override fun onDeviceConnected(deviceAddress: String) {
+                _uiState.update { it.copy(isSharingMode = true) }
+            }
+
+            override fun onDeviceDisconnected(deviceAddress: String) {
+                _uiState.update { it.copy(isSharingMode = false) }
+            }
+
+            override fun onDataReceived(data: ByteArray) {
+                // Handle received data
+            }
+
+            override fun onError(errorCode: Int, message: String) {
+                // Handle errors
+            }
+        })
+    }
+
+    fun connectTo(deviceName: String) {
+        if (context.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // Handle missing permission (e.g., log or notify the user)
+            return
+        }
+
+        bluetoothManager?.connectToServer(deviceName, object : BluetoothConnectionCallback {
+            override fun onDeviceConnected(deviceAddress: String) {
+                _uiState.update { it.copy(isSharingMode = true) }
+            }
+
+            override fun onDeviceDisconnected(deviceAddress: String) {
+                _uiState.update { it.copy(isSharingMode = false) }
+            }
+
+            override fun onDataReceived(data: ByteArray) {
+                // Handle received data
+            }
+
+            override fun onError(errorCode: Int, message: String) {
+                // Handle errors
+            }
+        })
     }
 
     fun loadUserData() {
@@ -150,5 +212,7 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         super.onCleared()
         // Cancela todas las corrutinas para evitar fugas de memoria
         ioScope.cancel()
+        // Limpia el BluetoothManager
+        bluetoothManager?.cleanup()
     }
 }

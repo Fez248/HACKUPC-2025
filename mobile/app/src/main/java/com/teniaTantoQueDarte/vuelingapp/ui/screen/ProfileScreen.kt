@@ -73,16 +73,18 @@ fun ProfileScreen(
     LaunchedEffect(permissionsState.value) {
         if (!permissionsState.value) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
     LaunchedEffect(Unit) {
         if (ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.BLUETOOTH_CONNECT
+                Manifest.permission.BLUETOOTH_ADMIN
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
@@ -167,9 +169,15 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
+            val isBluetoothEnabled = remember { mutableStateOf(viewModel.hasBluetoothSupport()) }
             Switch(
                 checked = uiState.value.isSharingMode,
-                onCheckedChange = { viewModel.setSharingMode(!uiState.value.isSharingMode) }
+                onCheckedChange = {
+                    if(!isBluetoothEnabled.value) {
+                        viewModel.setSharingMode(false)
+                        return@Switch
+                    }
+                    viewModel.setSharingMode(!uiState.value.isSharingMode) }
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -231,6 +239,7 @@ fun ProfileScreen(
                         val code = remember {
                             (100000..999999).random().toString()
                         }
+                        val serverStarted = remember { mutableStateOf(false) }
 
                         Text(
                             text = "Tu código de sincronización:",
@@ -256,6 +265,25 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(
+                            onClick = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.BLUETOOTH_ADVERTISE
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    serverStarted.value = true
+                                    viewModel.startServer(code)
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.BLUETOOTH_ADVERTISE)
+                                }
+                            },
+                            enabled = !serverStarted.value,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Sincronizar")
+                        }
                     } else {
                         // Usuario con menos batería: Mostrar campo para introducir código
                         val inputCodeState = remember { mutableStateOf("") }
@@ -279,7 +307,17 @@ fun ProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { /* Implementar sincronización */ },
+                            onClick = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.BLUETOOTH_SCAN
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    viewModel.connectTo(inputCodeState.value.toString())
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+                                }
+                            },
                             enabled = inputCodeState.value.length == 6,
                             modifier = Modifier.fillMaxWidth()
                         ) {
