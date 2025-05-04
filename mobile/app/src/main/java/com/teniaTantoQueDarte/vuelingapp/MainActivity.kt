@@ -24,8 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
 import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
-import androidx.work.Configuration
-import androidx.work.WorkManager
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.FavoriteViewModel
 
 

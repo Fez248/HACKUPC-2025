@@ -33,6 +33,9 @@ object FavouritesDestination
 @Serializable
 object NewsDestination
 
+@Serializable
+object GameDestination
+
 data class NavigationCategory<T:Any>(val route:T, val icon:ImageVector, val selectedIcon:ImageVector, val title:String)
 val navigationCategories by lazy {
     listOf(
