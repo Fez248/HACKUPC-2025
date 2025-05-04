@@ -67,7 +67,7 @@ fun GameScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Juego de frases",
+            text = "Storytelling game!!",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold
         )
@@ -76,7 +76,7 @@ fun GameScreen(
 
         // Indicador de ronda
         Text(
-            text = "Ronda ${currentRound.value} de ${totalRounds.value}",
+            text = "Round ${currentRound.value} de ${totalRounds.value}",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary
         )
@@ -107,10 +107,10 @@ fun GameScreen(
                     userInput = it
                 }
             },
-            label = { Text("Tu frase") },
+            label = { Text("Your contribution...") },
             modifier = Modifier.fillMaxWidth(),
             supportingText = {
-                Text("${userInput.length}/$maxChars caracteres")
+                Text("${userInput.length}/$maxChars characters")
             },
             maxLines = 3
         )
@@ -126,7 +126,7 @@ fun GameScreen(
             enabled = userInput.isNotBlank() && !isLoading.value,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Enviar frase")
+            Text("Send")
         }
 
         if (isLoading.value) {
@@ -155,7 +155,7 @@ fun GameScreen(
                 .padding(vertical = 8.dp))
 
             Text(
-                text = "Frases completadas (10/10 rondas)",
+                text = "Completed stories (10/10 rounds)",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(vertical = 12.dp)
@@ -183,7 +183,7 @@ fun CompletedPhraseItem(completedPhrase: CompletedPhrase) {
         ) {
             // Frase inicial
             Text(
-                text = "Frase inicial:",
+                text = "Story",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -196,21 +196,6 @@ fun CompletedPhraseItem(completedPhrase: CompletedPhrase) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Frase final
-            Text(
-                text = "Frase final:",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Text(
-                text = completedPhrase.finalPhrase,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
 
             // Badge de rondas completadas
             Row(

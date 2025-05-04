@@ -14,65 +14,40 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
 
-// Datos de ejemplo para frases completadas
-val sampleCompletedPhrases = listOf(
-    CompletedPhrase(
-        initialPhrase = "Un buen libro es aquel que se abre con expectación y se cierra con provecho",
-        finalPhrase = "La vida es como un libro que se abre cada día con una página en blanco"
-    ),
-    CompletedPhrase(
-        initialPhrase = "La paciencia es amarga, pero su fruto es dulce",
-        finalPhrase = "El tiempo revela la verdad, aunque la paciencia sea un camino difícil"
-    ),
-    CompletedPhrase(
-        initialPhrase = "El conocimiento es poder, pero la sabiduría es saber cómo usarlo",
-        finalPhrase = "Quien aprende y no comparte, acumula un tesoro invisible para los demás"
-    ),
-    CompletedPhrase(
-        initialPhrase = "La creatividad es la inteligencia divirtiéndose",
-        finalPhrase = "Las mejores ideas surgen cuando dejamos que nuestra mente juegue sin límites"
-    )
-)
 
 // Modelos de datos para API
 data class PhraseResponse(
-    val id: String,
-    val text: String,
-    val currentRound: Int,
-    val totalRounds: Int
+    val phrase: String,
+    val round: Int
 )
 
-data class CompletedPhraseResponse(
-    val id: String,
-    val initialPhrase: String,
-    val finalPhrase: String,
-    val roundsCompleted: Int
+data class AddPhraseRequest(
+    val phrase: String,
+    val round: Int
 )
 
-data class PhraseRequest(
-    val text: String,
-    val phraseId: String
+data class ApiResponse(
+    val message: String,
+    val phrase: PhraseResponse
 )
 
 // Interfaz de API
 interface GameApiService {
-    @GET("game/current-phrase")
-    suspend fun getCurrentPhrase(): Response<PhraseResponse>
+    @GET("api/game")
+    suspend fun getRandomPhrase(): Response<PhraseResponse>
 
-    @POST("game/send-phrase")
-    suspend fun sendPhrase(@Body request: PhraseRequest): Response<PhraseResponse>
+    @GET("api/game/ended")
+    suspend fun getEndedGames(): Response<List<PhraseResponse>>
 
-    @GET("game/completed-phrases")
-    suspend fun getCompletedPhrases(): Response<List<CompletedPhraseResponse>>
+    @POST("api/game/add")
+    suspend fun addPhrase(@Body request: AddPhraseRequest): Response<ApiResponse>
 }
 
 class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     // Estado UI
-    private val _currentPhrase = MutableStateFlow<String>("Cargando frase...")
+    private val _currentPhrase = MutableStateFlow<String>("Loading...")
     val currentPhrase: StateFlow<String> = _currentPhrase.asStateFlow()
 
     private val _currentRound = MutableStateFlow(0)
@@ -90,38 +65,38 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    private val _currentPhraseId = MutableStateFlow("")
+    // Almacenamos la frase actual para poder enviarla al siguiente endpoint
+    private var currentPhraseData: PhraseResponse? = null
 
     // Servicio API
     private val gameService = RetrofitClient.retrofit.create(GameApiService::class.java)
 
     init {
-        loadCurrentPhrase()
-        loadCompletedPhrases()
+        loadRandomPhrase()
+        loadEndedGames()
     }
 
-    private fun loadCurrentPhrase() {
+    private fun loadRandomPhrase() {
         viewModelScope.launch {
             try {
                 _isLoading.value = true
                 _error.value = null
 
-                val response = gameService.getCurrentPhrase()
+                val response = gameService.getRandomPhrase()
                 if (response.isSuccessful && response.body() != null) {
                     val phraseData = response.body()!!
-                    _currentPhrase.value = phraseData.text
-                    _currentRound.value = phraseData.currentRound
-                    _totalRounds.value = phraseData.totalRounds
-                    _currentPhraseId.value = phraseData.id
+                    currentPhraseData = phraseData
+                    _currentPhrase.value = phraseData.phrase
+                    _currentRound.value = phraseData.round
                 } else {
-                    _error.value = "No se pudo cargar la frase: ${response.message()}"
+                    _error.value = "Couldn't load: ${response.message()}"
                     // Usar frase de ejemplo para desarrollo
                     _currentPhrase.value = "Esta es una frase de ejemplo para el juego"
                     _currentRound.value = 1
                 }
             } catch (e: Exception) {
                 Log.e("GameViewModel", "Error al cargar frase", e)
-                _error.value = "Error de conexión: ${e.message}"
+                _error.value = "Connection error: ${e.message}"
                 // Usar frase de ejemplo para desarrollo
                 _currentPhrase.value = "Esta es una frase de ejemplo para el juego"
                 _currentRound.value = 1
@@ -131,27 +106,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun loadCompletedPhrases() {
+    private fun loadEndedGames() {
         viewModelScope.launch {
             try {
-                val response = gameService.getCompletedPhrases()
+                val response = gameService.getEndedGames()
                 if (response.isSuccessful && response.body() != null) {
-                    _completedPhrases.value = response.body()!!.map {
+                    // Convertir las frases terminadas a CompletedPhrase
+                    _completedPhrases.value = response.body()!!.map { phraseResponse ->
                         CompletedPhrase(
-                            initialPhrase = it.initialPhrase,
-                            finalPhrase = it.finalPhrase,
-                            roundsCompleted = it.roundsCompleted
+                            initialPhrase = "Historia #${phraseResponse.phrase.hashCode().toString().takeLast(4)}", // Identificador único
+                            finalPhrase = phraseResponse.phrase,
+                            roundsCompleted = phraseResponse.round
                         )
                     }
                 } else {
-                    Log.w("GameViewModel", "No se pudieron cargar frases completadas")
+                    Log.w("GameViewModel", "No se pudieron cargar historias finalizadas")
                     // En desarrollo, usar ejemplos
-                    _completedPhrases.value = sampleCompletedPhrases
                 }
             } catch (e: Exception) {
-                Log.e("GameViewModel", "Error al cargar historial", e)
+                Log.e("GameViewModel", "Error al cargar historias finalizadas", e)
                 // En desarrollo, usar ejemplos
-                _completedPhrases.value = sampleCompletedPhrases
             }
         }
     }
@@ -162,23 +136,27 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 _isLoading.value = true
                 _error.value = null
 
-                val request = PhraseRequest(
-                    text = userPhrase,
-                    phraseId = _currentPhraseId.value
+                // Verificar si tenemos una frase actual para continuar
+                if (currentPhraseData == null) {
+                    _error.value = "No hay frase actual para continuar"
+                    return@launch
+                }
+
+                // Crear la petición para añadir la continuación de la historia
+                val request = AddPhraseRequest(
+                    phrase = userPhrase,
+                    round = currentPhraseData!!.round
                 )
 
-                val response = gameService.sendPhrase(request)
-                if (response.isSuccessful && response.body() != null) {
-                    val newPhraseData = response.body()!!
-                    _currentPhrase.value = newPhraseData.text
-                    _currentRound.value = newPhraseData.currentRound
-                    _totalRounds.value = newPhraseData.totalRounds
-                    _currentPhraseId.value = newPhraseData.id
-
-                    // Si cambiamos a una nueva ronda, refrescamos las frases completadas
-                    if (newPhraseData.currentRound == 1) {
-                        loadCompletedPhrases()
+                val response = gameService.addPhrase(request)
+                if (response.isSuccessful) {
+                    // Si la historia ha llegado a la ronda 10, actualizar la lista de historias finalizadas
+                    if (currentPhraseData!!.round >= 9) {  // 9 + 1 = 10 (ronda final)
+                        loadEndedGames()
                     }
+
+                    // Cargar una nueva frase aleatoria para continuar jugando
+                    loadRandomPhrase()
                 } else {
                     _error.value = "No se pudo enviar la frase: ${response.message()}"
                 }
@@ -192,7 +170,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun refreshGame() {
-        loadCurrentPhrase()
-        loadCompletedPhrases()
+        loadRandomPhrase()
+        loadEndedGames()
     }
 }
