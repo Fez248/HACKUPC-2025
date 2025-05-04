@@ -111,7 +111,7 @@ class HomeViewmodel(application: Application) : AndroidViewModel(application) {
     }
 
     // Función para cargar datos por defecto
-    private fun loadDataAdapter() {
+    fun loadDataAdapter() {
         viewModelScope.launch {
             viewModelScope.launch {
                 try {

@@ -30,6 +30,9 @@ import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.collectAsState
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.HomeViewmodel
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 
 fun getSampleFlights(): List<FlightModel> {
     return listOf(
@@ -95,7 +98,19 @@ fun HomeScreen(viewmodel: HomeViewmodel) {
     }
 
     Scaffold(
-
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewmodel.loadDataAdapter() },
+                modifier = Modifier.padding(bottom = 16.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Recargar vuelos",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
     ) { innerPadding ->
         Column(
             modifier = Modifier

@@ -308,6 +308,12 @@ fun ProfileScreen(
                                     description = "Toca en 'Configurar punto de acceso', selecciona 'Seguridad: Ninguna' o elimina la contraseña actual y guarda los cambios."
                                 )
 
+                                StepCard(
+                                    number = "4",
+                                    title = "Activa la conexión por Bluetooth",
+                                    description = "Ve a Ajustes > Conexiones > Bluetooth y actívalo. Luego ve a 'Compartir conexión' y activa 'Compartir Internet mediante Bluetooth'."
+                                )
+
                                 // Nota de advertencia
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Card(
