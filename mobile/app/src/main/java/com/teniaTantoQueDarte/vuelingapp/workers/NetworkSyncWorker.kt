@@ -19,6 +19,8 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
 import com.teniaTantoQueDarte.vuelingapp.utils.RetrofitClient
+import android.util.Log
+
 
 class NetworkSyncWorker(
     appContext: Context,
@@ -53,33 +55,34 @@ class NetworkSyncWorker(
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         return@withContext try {
-            // 1️⃣ Retrofit call
-            val flights: List<FlightModel> = RetrofitClient.apiService.getFlights().map { apiModel ->
+            Log.d("NetworkSyncWorker", "Iniciando sincronización de datos")
+
+            // Retrofit call
+            val apiResponse = RetrofitClient.apiService.getFlights()
+            Log.d("NetworkSyncWorker", "Respuesta API recibida: ${apiResponse.size} vuelos")
+
+            val flights = apiResponse.map { apiModel ->
                 FlightModel(
-                    ArriveTime = apiModel.arrivalTime,
-                    DepartTime = apiModel.departureTime,
-                    FromShort = apiModel.origin,
-                    ToShort = apiModel.destination,
-                    Status = apiModel.status,
-                    FlightNumber = apiModel.flightNumber,
-                    updateTime = System.currentTimeMillis().toString(),
-                    favorito = true,
+                    ArriveTime = apiModel.landingTime ?: "Unknown",
+                    DepartTime = apiModel.departureTime ?: "Unknown",
+                    FromShort = apiModel.originShort ?: "",
+                    ToShort = apiModel.destinationShort ?: "",
+                    Status = apiModel.status ?: "Unknown",
+                    FlightNumber = apiModel.flightNumber ?: "",
+                    updateTime = apiModel.date ?: "Unknown",
+                    favorito = false
                 )
             }
 
-            // 2️⃣ Serialize to JSON
+            // Serialize to JSON
             val json = Gson().toJson(flights)
+            Log.d("NetworkSyncWorker", "JSON generado: ${json.take(100)}...")
 
-            // 3️⃣ Return as outputData
-            val result = Result.success(workDataOf(KEY_FLIGHTS_JSON to json))
-
-            // Schedule the next execution (for frequent updates)
-            schedulePeriodic(applicationContext)
-
-            result
+            // Return as outputData
+            val outputData = workDataOf(KEY_FLIGHTS_JSON to json)
+            Result.success(outputData)
         } catch (e: Exception) {
-            // Log the exception for debugging
-            e.printStackTrace()
+            Log.e("NetworkSyncWorker", "Error en sincronización", e)
             Result.retry()
         }
     }

@@ -63,6 +63,8 @@ fun ProfileScreen(
         )
     )
 ) {
+
+
     // Optimizamos usando collectAsStateWithLifecycle para mejor rendimiento
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val permissionsState = viewModel.permissionsState.collectAsStateWithLifecycle()
