@@ -9,6 +9,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,13 +18,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -34,7 +40,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +52,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.teniaTantoQueDarte.vuelingapp.R
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
+
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
@@ -256,6 +266,76 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         )
+
+                        // Aquí añadimos la información de punto de acceso
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Activa tu punto de acceso",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Spacer(modifier = Modifier.height(16.dp))
+
+                                // Instrucciones en tarjetas
+                                StepCard(
+                                    number = "1",
+                                    title = "Activa el punto de acceso",
+                                    description = "Ve a Ajustes > Conexiones > Compartir conexión y Punto de acceso móvil."
+                                )
+
+                                StepCard(
+                                    number = "2",
+                                    title = "Activa la opción",
+                                    description = "Toca en 'Punto de acceso móvil' o 'Zona Wi-Fi portátil' y activa el interruptor."
+                                )
+
+                                StepCard(
+                                    number = "3",
+                                    title = "Configura sin contraseña",
+                                    description = "Toca en 'Configurar punto de acceso', selecciona 'Seguridad: Ninguna' o elimina la contraseña actual y guarda los cambios."
+                                )
+
+                                // Nota de advertencia
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Icono de advertencia
+                                        Icon(
+                                            painter = painterResource(id = android.R.drawable.ic_dialog_alert),
+                                            contentDescription = "Advertencia",
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        Text(
+                                            text = "Importante: Esta configuración permitirá que otros dispositivos se conecten a tu red. Recuerda activar la contraseña cuando termines.",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onErrorContainer
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     } else {
                         // Usuario con menos batería: Mostrar campo para introducir código
                         val inputCodeState = remember { mutableStateOf("") }
@@ -292,6 +372,55 @@ fun ProfileScreen(
     }
 }
 
+@Composable
+private fun StepCard(number: String, title: String, description: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Círculo numerado
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = number,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Texto de instrucción
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
 // Factory correcta para AndroidViewModel
 class ProfileViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
@@ -302,16 +431,13 @@ class ProfileViewModelFactory(private val application: Application) : ViewModelP
     }
 }
 
-
 private data class ProfileDisplayData(
     val formattedPoints: String,
     val isSharing: Boolean
 )
-
 
 @Preview
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen()
 }
-
