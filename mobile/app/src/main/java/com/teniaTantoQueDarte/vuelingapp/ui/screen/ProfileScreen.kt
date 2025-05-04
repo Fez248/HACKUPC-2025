@@ -456,7 +456,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "¡Juega ahora!",
+                    text = "¡Play now!",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -465,7 +465,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Participa en el juego de frases!",
+                    text = "PArticipate in the story telling game!",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -480,7 +480,7 @@ fun ProfileScreen(
                         .height(56.dp)
                 ) {
                     Text(
-                        text = "Comenzar juego",
+                        text = "Start the game",
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
