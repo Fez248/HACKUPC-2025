@@ -88,6 +88,7 @@ fun ProfileScreen(
     LaunchedEffect(permissionsState.value) {
         if (!permissionsState.value) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
@@ -98,6 +99,7 @@ fun ProfileScreen(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
@@ -137,7 +139,7 @@ fun ProfileScreen(
     ) {
         // Sección de saludo (simplificada)
         Text(
-            text = "Profile",
+            text = "Hello!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 16.dp)
@@ -224,9 +226,15 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
+            val isBluetoothEnabled = remember { mutableStateOf(viewModel.hasBluetoothSupport()) }
             Switch(
                 checked = uiState.value.isSharingMode,
-                onCheckedChange = { viewModel.setSharingMode(!uiState.value.isSharingMode) }
+                onCheckedChange = {
+                    if(!isBluetoothEnabled.value) {
+                        viewModel.setSharingMode(false)
+                        return@Switch
+                    }
+                    viewModel.setSharingMode(!uiState.value.isSharingMode) }
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -410,7 +418,17 @@ fun ProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { /* Implementar sincronización */ },
+                            onClick = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.BLUETOOTH_SCAN
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    viewModel.connectTo(inputCodeState.value.toString())
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+                                }
+                            },
                             enabled = inputCodeState.value.length == 6,
                             modifier = Modifier.fillMaxWidth()
                         ) {

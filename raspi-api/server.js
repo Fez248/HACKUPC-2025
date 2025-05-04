@@ -5,6 +5,10 @@ const crypto = require('crypto'); // For signing data
 const app = express();
 app.use(express.json());
 
+// Stats
+let apiRequests = 0;
+let bytesSent = 0;
+
 // Load data
 let data = JSON.parse(fs.readFileSync('data.json', 'utf-8'));
 let news = JSON.parse(fs.readFileSync('news.json', 'utf-8'));
@@ -34,6 +38,8 @@ function signData(data) {
 
 // GET /api/:flightNumber/data
 app.get('/api/:flightNumber/data', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
     const { flightNumber } = req.params;
     if (!flightNumber) return res.status(400).json({ error: 'Flight number is required' });
 
@@ -53,6 +59,8 @@ app.get('/api/:flightNumber/data', (req, res) => {
 
 // GET /api/:flightNumber/news
 app.get('/api/:flightNumber/news', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
     const { flightNumber } = req.params;
     if (!flightNumber) return res.status(400).json({ error: 'Flight number is required' });
 
@@ -72,6 +80,9 @@ app.get('/api/:flightNumber/news', (req, res) => {
 
 // PATCH /api/admin/:flightNumber/data
 app.patch('/api/admin/:flightNumber/data', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
     const { flightNumber } = req.params;
     const updates = req.body;
 
@@ -97,6 +108,9 @@ app.patch('/api/admin/:flightNumber/data', (req, res) => {
 });
 
 app.post('/api/admin/news', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
     const { id, flightNumber, title, content, date } = req.body;
 
     if (!id || !flightNumber || !title || !content || !date) {
@@ -113,6 +127,52 @@ app.post('/api/admin/news', (req, res) => {
     const signature = signData(newArticle);
 
     res.status(201).json({ message: 'News saved (old one replaced if existed)', article: newArticle, signature });
+});
+
+// ===== Game =====
+
+// 1 Endpoint, return a phrase of a file where I have them stored. the round of the phrase has to be less than 10
+// and +1 to all phrases
+app.get('/api/game', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
+    const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    const updatedPhrases = phrases.map(phrase => ({ ...phrase, round: phrase.round + 1 }));
+
+    fs.writeFileSync('phrases.json', JSON.stringify(updatedPhrases, null, 2), 'utf8');
+    res.json(randomPhrase);
+});
+
+// 2 Endpoint, return all phrases that have a round of 10 or more
+app.get('/api/game/all', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
+    const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
+    const filteredPhrases = phrases.filter(phrase => phrase.round >= 10);
+
+    if (filteredPhrases.length === 0) return res.status(404).json({ error: 'No phrases found with round >= 10' });
+
+    res.json(filteredPhrases);
+});
+
+// 3 Endpoint, to create new phrases
+app.post('/api/game', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
+    const { phrase, round } = req.body;
+
+    if (!phrase || !round) return res.status(400).json({ error: 'Missing required fields' });
+
+    const newPhrase = { phrase, round };
+    const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
+    phrases.push(newPhrase);
+
+    fs.writeFileSync('phrases.json', JSON.stringify(phrases, null, 2), 'utf8');
+    res.status(201).json({ message: 'Phrase created', phrase: newPhrase });
 });
 
 // ===== Server =====
