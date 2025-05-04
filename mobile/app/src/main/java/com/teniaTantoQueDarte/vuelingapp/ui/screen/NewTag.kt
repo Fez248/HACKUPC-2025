@@ -20,7 +20,7 @@ import com.teniaTantoQueDarte.vuelingapp.model.NewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 
 @Composable
-fun NewTag(item: NewModel) {
+fun NewTag(item: com.teniaTantoQueDarte.vuelingapp.model.NewModel) {
     // Color de fondo según el FlightNumber
     val backgroundColor = if (item.FlightNumber == "Airport" || item.FlightNumber == "Aeropuerto") {
         Color(0xFFB76C2F)
@@ -105,14 +105,7 @@ fun NewTag(item: NewModel) {
 @Composable
 fun NewTagPreview() {
     VuelingAppTheme {
-        NewTag(
-            item = NewModel(
-                FlightNumber = "VY1234",
-                Title = "Cambio de puerta de embarque",
-                Content = "La puerta de embarque ha cambiado de A12 a B5. Por favor, acérquese a la nueva ubicación.",
-                Date = "12:30"
-            )
-        )
+
     }
 }
 
@@ -120,13 +113,7 @@ fun NewTagPreview() {
 @Composable
 fun NewTagAirportPreview() {
     VuelingAppTheme {
-        NewTag(
-            item = NewModel(
-                FlightNumber = "Airport",
-                Title = "Retrasos generalizados",
-                Content = "Debido a condiciones meteorológicas adversas, se esperan retrasos en todas las salidas y llegadas, por favor, consulte la pantalla de información y manténgase informado.",
-                Date = "15:45"
-            )
-        )
+
+
     }
 }

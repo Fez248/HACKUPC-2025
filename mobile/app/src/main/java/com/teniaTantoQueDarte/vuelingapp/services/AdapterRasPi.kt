@@ -8,7 +8,9 @@ import androidx.work.workDataOf
 import com.google.gson.Gson
 import com.teniaTantoQueDarte.vuelingapp.data.db.AppDatabase
 import com.teniaTantoQueDarte.vuelingapp.data.repository.FlightRepository
+import com.teniaTantoQueDarte.vuelingapp.data.repository.NewRepository
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
+import com.teniaTantoQueDarte.vuelingapp.model.NewModel
 import com.teniaTantoQueDarte.vuelingapp.utils.RetrofitClient
 import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker.Companion.KEY_FLIGHTS_JSON
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,17 @@ class AdapterRasPi(private val context: Context) {
     // Acceso optimizado a la base de datos
 
     private val flightRepository by lazy { FlightRepository(context) }
+
+    // Variables para caché de noticias
+    private var cachedNews: List<NewModel>? = null
+    private var lastNewsFetchTime: Long = 0
+    private val newsRepository by lazy { NewRepository(context) }
+
+    companion object {
+        const val KEY_NEWS_JSON = "key_news_json"
+    }
+
+
 
     // Clave pública para verificar datos
     private val publicKeyBase64 = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTXj2e0YQMcttm/zGb7l" +
@@ -145,6 +158,86 @@ class AdapterRasPi(private val context: Context) {
             flightRepository.insertFlights(flights)
         } catch (e: Exception) {
             Log.e("AdapterRasPi", "Error actualizando BD local", e)
+        }
+    }
+
+    suspend fun getNews(): Result {
+        return withContext(Dispatchers.IO) {
+            try {
+                // 1. Verificar si hay datos en caché válidos
+                val currentTime = System.currentTimeMillis()
+                if (cachedNews != null && (currentTime - lastNewsFetchTime < CACHE_VALIDITY_PERIOD)) {
+                    return@withContext createNewsSuccessResult(cachedNews!!)
+                }
+
+                // 2. Intentar obtener datos de la red
+                try {
+                    val apiResponse = RetrofitClient.apiService.getNews()
+
+                    // Extraer la firma del último elemento y quitarlo de la lista
+                    val signatureBase64 = apiResponse.lastOrNull()?.signature ?: ""
+                    val newsResponse = if (apiResponse.isNotEmpty()) {
+                        apiResponse.dropLast(1)
+                    } else {
+                        emptyList()
+                    }
+
+                    // Verificar autenticidad de los datos
+                    val isValid = verifyData(newsResponse, signatureBase64, publicKeyBase64)
+                    if (!isValid) {
+                        Log.w("AdapterRasPi", "Verificación de firma fallida, usando datos locales")
+                        return@withContext fallbackToLocal()
+                    }
+
+                    val news = newsResponse.map { apiModel ->
+                        NewModel(
+                            id = apiModel.id,
+                            FlightNumber = apiModel.FlightNumber,
+                            Title = apiModel.Title,
+                            Content = apiModel.Content,
+                            Date = apiModel.Date
+                        )
+                    }
+                    // Actualizar caché y BD
+                    cachedNews = news
+                    lastNewsFetchTime = currentTime
+                    updateLocalNewsDatabase(news)
+
+                    return@withContext createNewsSuccessResult(news)
+                } catch (e: Exception) {
+                    Log.w("AdapterRasPi", "Error de red obteniendo noticias, usando datos locales", e)
+                    return@withContext fallbackToLocalNews()
+                }
+            } catch (e: Exception) {
+                Log.e("AdapterRasPi", "Error crítico obteniendo noticias", e)
+                return@withContext Result.failure()
+            }
+        }
+    }
+
+    // Recuperación de datos locales de noticias
+    private suspend fun fallbackToLocalNews(): Result {
+        val localNews = newsRepository.getAllNews()
+        return if (localNews.isNotEmpty()) {
+            cachedNews = localNews
+            createNewsSuccessResult(localNews)
+        } else {
+            Result.failure()
+        }
+    }
+
+    // Crear resultado exitoso para noticias
+    private fun createNewsSuccessResult(news: List<NewModel>): Result {
+        val json = gson.toJson(news)
+        return Result.success(workDataOf(KEY_NEWS_JSON to json))
+    }
+
+    // Actualizar base de datos local de noticias
+    private suspend fun updateLocalNewsDatabase(news: List<NewModel>) {
+        try {
+            newsRepository.insertNews(news)
+        } catch (e: Exception) {
+            Log.e("AdapterRasPi", "Error actualizando noticias en BD local", e)
         }
     }
 }

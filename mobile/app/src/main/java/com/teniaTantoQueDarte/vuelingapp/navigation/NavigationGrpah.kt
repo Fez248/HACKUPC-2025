@@ -106,10 +106,10 @@ fun NavGraphBuilder.ProfileSection(
     }
 }
 
-fun NavGraphBuilder.FavouritesSection(navController: NavHostController) {
+fun NavGraphBuilder.FavouritesSection(navController: NavHostController, viewModel: FavoriteViewModel) {
     navigation<FavouritesCategory>(startDestination = FavouritesDestination) {
         composable<FavouritesDestination> {
-            // Tu FavouritesScreen aquí
+            FavoriteScreen(viewModel)
         }
     }
 }

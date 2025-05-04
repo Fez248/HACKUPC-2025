@@ -27,45 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.teniaTantoQueDarte.vuelingapp.model.NewModel
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
 
-// Función para generar datos de ejemplo
-fun getSampleNews(): List<NewModel> {
-    return listOf(
-        NewModel(
-            FlightNumber = "VY1235",
-            Title = "Cambio de puerta de embarque",
-            Content = "La puerta de embarque ha cambiado de A12 a B5. Por favor, acérquese a la nueva ubicación.",
-            Date = "12:30"
-        ),
-        NewModel(
-            FlightNumber = "Aeropuerto",
-            Title = "Retrasos generalizados",
-            Content = "Debido a condiciones meteorológicas adversas, se esperan retrasos en todas las salidas y llegadas.",
-            Date = "15:45"
-        ),
-        NewModel(
-            FlightNumber = "VY7842",
-            Title = "Asientos asignados",
-            Content = "Se han asignado asientos adicionales para su vuelo. Por favor, consulte su tarjeta de embarque actualizada.",
-            Date = "17:00"
-        ),
-        NewModel(
-            FlightNumber = "Aeropuerto",
-            Title = "Mantenimiento en Terminal 2",
-            Content = "Se están realizando labores de mantenimiento en la Terminal 2. Puede haber ruido y algunas áreas restringidas.",
-            Date = "10:15"
-        ),
-        NewModel(
-            FlightNumber = "VY6574",
-            Title = "Servicio de catering actualizado",
-            Content = "Hemos actualizado nuestro menú de catering con nuevas opciones para su vuelo.",
-            Date = "14:20"
-        )
-    )
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +38,7 @@ fun NewsScreen(viewModel: NewsViewModel) {
     var searchQuery by remember { mutableStateOf("") }
 
     // Usar noticias del ViewModel si está disponible, o usar datos de ejemplo
-    val news = viewModel?.news?.collectAsState()?.value ?: getSampleNews()
+    val news = viewModel.news.collectAsState().value
 
     // Ordenar noticias por fecha (más recientes primero)
     val sortedNews = remember(news) {
@@ -120,7 +85,7 @@ fun NewsScreen(viewModel: NewsViewModel) {
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
                 items(filteredNews) { newsItem ->
-                    NewTag(item = newsItem)
+                    NewTag(newsItem)
                 }
             }
         }
@@ -131,6 +96,6 @@ fun NewsScreen(viewModel: NewsViewModel) {
 @Composable
 fun NewsScreenPreview() {
     VuelingAppTheme {
-        //NewsScreen()
+        // NewsScreen() - No se puede usar sin parámetro
     }
 }

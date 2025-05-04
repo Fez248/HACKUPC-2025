@@ -4,15 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.teniaTantoQueDarte.vuelingapp.data.dao.FlightDao
-import com.teniaTantoQueDarte.vuelingapp.data.dao.UserDao
-import com.teniaTantoQueDarte.vuelingapp.data.model.User
-import com.teniaTantoQueDarte.vuelingapp.data.model.FlightModel
+import com.teniaTantoQueDarte.vuelingapp.data.dao.*
+import com.teniaTantoQueDarte.vuelingapp.data.model.*
 
-@Database(entities = [User::class, FlightModel::class], version = 2, exportSchema = false)
+
+@Database(entities = [User::class, FlightModel::class, NewModel::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun flightDao(): FlightDao
+    abstract fun newsDao(): NewDao
 
     companion object {
         @Volatile

@@ -28,4 +28,6 @@ object PreferenceManager {
             preferences[LAST_SYNC_TIME] = time
         }
     }
+
+
 }
