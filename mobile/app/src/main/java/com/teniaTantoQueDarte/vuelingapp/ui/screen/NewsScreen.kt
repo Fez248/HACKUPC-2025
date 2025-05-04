@@ -29,6 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.teniaTantoQueDarte.vuelingapp.ui.theme.VuelingAppTheme
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.NewsViewModel
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 
 
 
@@ -54,7 +57,21 @@ fun NewsScreen(viewModel: NewsViewModel) {
         }
     }
 
-    Scaffold { innerPadding ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { viewModel.loadNews() },  // Asegúrate de tener este método en tu NewsViewModel
+                modifier = Modifier.padding(bottom = 16.dp),
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Recargar noticias",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
