@@ -1,6 +1,7 @@
 package com.teniaTantoQueDarte.vuelingapp.ui.viewmodel
 
 import android.app.Application
+import android.bluetooth.BluetoothManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.teniaTantoQueDarte.vuelingapp.data.repository.UserRepository
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit
 data class ProfileUiState(
     val points: Int = 0,
     val isSharingMode: Boolean = false,
+    val moreBatteryGuy: Boolean = false,
     val isLoading: Boolean = true
 )
 
@@ -22,10 +24,17 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    private val _permissionsState = MutableStateFlow(false)
+    val permissionsState: StateFlow<Boolean> = _permissionsState.asStateFlow()
+
     // Coroutine específica para operaciones de IO
     private val ioScope = CoroutineScope(
         Dispatchers.IO + SupervisorJob() + CoroutineName("ProfileIO")
     )
+
+    val context = getApplication<Application>().applicationContext
+
+    private var bluetoothManager: BluetoothManager? = null;
 
     // Control de frecuencia para operaciones batch
     private var lastBatchOperationTime = 0L
@@ -35,15 +44,40 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
         loadUserData()
     }
 
-    fun toggleSharingMode(isSharing: Boolean) {
+    fun setSharingMode(isSharing: Boolean) {
         // Evita operaciones redundantes
         if (_uiState.value.isSharingMode == isSharing) return
+        if(!permissionsState.value) {
+            // Si no se han concedido permisos, no se puede cambiar el modo
+            return
+        }
 
         ioScope.launch {
             repository.toggleSharingMode(isSharing)
             // Actualiza UI en Main dispatcher
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(isSharingMode = isSharing) }
+            }
+        }
+    }
+
+    fun setPermissionsState(isGranted: Boolean) {
+        _permissionsState.value = isGranted
+    }
+
+    fun setBluetoothManager(manager: BluetoothManager) {
+        bluetoothManager = manager
+    }
+
+    fun setBatteryStatus(isMoreBattery: Boolean) {
+        // Evita operaciones redundantes
+        if (_uiState.value.moreBatteryGuy == isMoreBattery) return
+
+        ioScope.launch {
+            repository.setBatteryStatus(isMoreBattery)
+            // Actualiza UI en Main dispatcher
+            withContext(Dispatchers.Main) {
+                _uiState.update { it.copy(moreBatteryGuy = isMoreBattery) }
             }
         }
     }

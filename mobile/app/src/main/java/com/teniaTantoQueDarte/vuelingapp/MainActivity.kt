@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         NetworkSyncWorker.schedulePeriodic(applicationContext)
 
-
         setContent {
             VuelingAppTheme {
                 val navController = rememberNavController()
