@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.teniaTantoQueDarte.vuelingapp.R
 import com.teniaTantoQueDarte.vuelingapp.ui.viewmodel.ProfileViewModel
+import androidx.compose.foundation.layout.Arrangement
 
 @Composable
 fun ProfileScreen(
@@ -137,7 +138,7 @@ fun ProfileScreen(
     ) {
         // Sección de saludo (simplificada)
         Text(
-            text = "Hello!",
+            text = "Profile",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 16.dp)
@@ -152,18 +153,25 @@ fun ProfileScreen(
                 .padding(8.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
                 Text(
                     text = "Tus Puntos",
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${uiState.value.points}",
                     style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
