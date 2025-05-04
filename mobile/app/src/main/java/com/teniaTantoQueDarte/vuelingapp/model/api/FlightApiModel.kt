@@ -7,22 +7,22 @@ import kotlinx.serialization.Serializable
 data class FlightApiModel(
     @SerialName("flightNumber")
     val flightNumber: String,
-    @SerialName("origin")
-    val origin: String,
-    @SerialName("destination")
-    val destination: String,
+    @SerialName("originFull")
+    val originFull: String,
+    @SerialName("originShort")
+    val originShort: String,
+    @SerialName("destinationFull")
+    val destinationFull: String,
+    @SerialName("destinationShort")
+    val destinationShort: String,
     @SerialName("departureTime")
     val departureTime: String,
-    @SerialName("arrivalTime")
-    val arrivalTime: String,
+    @SerialName("landingTime")
+    val landingTime: String,
     @SerialName("status")
     val status: String,
-    @SerialName("door")
-    val door: String,
-    @SerialName("gate")
-    val gate: String,
-    @SerialName("terminal")
-    val terminal: String,
+    @SerialName("date")
+    val date: String,
     @SerialName("signature")
     val signature: String
 )
