@@ -107,6 +107,26 @@ app.patch('/api/admin/:flightNumber/data', (req, res) => {
     res.json({ message: 'Flight updated', flight, signature });
 });
 
+// end point to create flights
+app.post('/api/admin/data', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
+    const { flightNumber, originFull, originShort, departureTime, destinationFull, destinationShort, landingTime, status, date } = req.body;
+
+    if (!flightNumber || !originFull || !originShort || !departureTime || !destinationFull || !destinationShort || !landingTime || !status || !date) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newFlight = { flightNumber, originFull, originShort, departureTime, destinationFull, destinationShort, landingTime, status, date };
+    data.push(newFlight);
+
+    saveFlights();
+    const signature = signData(newFlight);
+
+    res.status(201).json({ message: 'Flight created', flight: newFlight, signature });
+});
+
 app.post('/api/admin/news', (req, res) => {
     apiRequests++;
     bytesSent += res.get('Content-Length') || 0;
@@ -131,35 +151,21 @@ app.post('/api/admin/news', (req, res) => {
 
 // ===== Game =====
 
-// 1 Endpoint, return a phrase of a file where I have them stored. the round of the phrase has to be less than 10
-// and +1 to all phrases
+// endpoint that gets you a random game, either exists or it is newly created
 app.get('/api/game', (req, res) => {
     apiRequests++;
     bytesSent += res.get('Content-Length') || 0;
 
     const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
     const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    const updatedPhrases = phrases.map(phrase => ({ ...phrase, round: phrase.round + 1 }));
 
-    fs.writeFileSync('phrases.json', JSON.stringify(updatedPhrases, null, 2), 'utf8');
+    if (!randomPhrase) return res.status(404).json({ error: 'No phrases found' });
+
     res.json(randomPhrase);
 });
 
-// 2 Endpoint, return all phrases that have a round of 10 or more
-app.get('/api/game/all', (req, res) => {
-    apiRequests++;
-    bytesSent += res.get('Content-Length') || 0;
-
-    const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
-    const filteredPhrases = phrases.filter(phrase => phrase.round >= 10);
-
-    if (filteredPhrases.length === 0) return res.status(404).json({ error: 'No phrases found with round >= 10' });
-
-    res.json(filteredPhrases);
-});
-
-// 3 Endpoint, to create new phrases
-app.post('/api/game', (req, res) => {
+// endpoint to add a new phrase to the game and increment the round, the phrases get concatenated if the round is les than 10
+app.post('/api/game/add', (req, res) => {
     apiRequests++;
     bytesSent += res.get('Content-Length') || 0;
 
@@ -167,12 +173,29 @@ app.post('/api/game', (req, res) => {
 
     if (!phrase || !round) return res.status(400).json({ error: 'Missing required fields' });
 
-    const newPhrase = { phrase, round };
     const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
+    const lastPhrase = phrases[phrases.length - 1];
+
+    if (lastPhrase.round >= 10) return res.status(400).json({ error: 'Maximum rounds reached' });
+
+    const newPhrase = { phrase, round: lastPhrase.round + 1 };
     phrases.push(newPhrase);
 
     fs.writeFileSync('phrases.json', JSON.stringify(phrases, null, 2), 'utf8');
-    res.status(201).json({ message: 'Phrase created', phrase: newPhrase });
+    res.status(201).json({ message: 'Phrase added', phrase: newPhrase });
+});
+
+// endpoint to get the games that have ended
+app.get('/api/game/ended', (req, res) => {
+    apiRequests++;
+    bytesSent += res.get('Content-Length') || 0;
+
+    const phrases = JSON.parse(fs.readFileSync('phrases.json', 'utf-8'));
+    const endedPhrases = phrases.filter(p => p.round >= 10);
+
+    if (endedPhrases.length === 0) return res.status(404).json({ error: 'No ended games found' });
+
+    res.json(endedPhrases);
 });
 
 // ===== Server =====

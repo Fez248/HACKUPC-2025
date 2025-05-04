@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "phrase": "The quick brown fox jumps over the lazy dog",
+        "round": 1
+    },
+    {
+        "id": 2,
+        "phrase": "A journey of a thousand miles begins with a single step",
+        "round": 2
+    },
+    {
+        "id": 3,
+        "phrase": "To be or not to be, that is the question",
+        "round": 3
+    },
+    {
+        "id": 4,
+        "phrase": "All that glitters is not gold",
+        "round": 4
+    },
+    {
+        "id": 5,
+        "phrase": "Fortune favors the bold",
+        "round": 5
+    }
+]
