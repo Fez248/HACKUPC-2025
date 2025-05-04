@@ -34,50 +34,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 
-fun getSampleFlights(): List<FlightModel> {
-    return listOf(
-        FlightModel(
-            ArriveTime = "12:45",
-            DepartTime = "11:30",
-            FromShort = "BCN",
-            ToShort = "MAD",
-            Status = "A tiempo",
-            FlightNumber = "VY1235",
-            updateTime = "12:00",
-            favorito = true
-        ),
-        FlightModel(
-            ArriveTime = "18:15",
-            DepartTime = "15:40",
-            FromShort = "BCN",
-            ToShort = "LHR",
-            Status = "Retrasado",
-            FlightNumber = "VY7842",
-            updateTime = "17:45",
-            favorito = true
-        ),
-        FlightModel(
-            ArriveTime = "21:00",
-            DepartTime = "19:45",
-            FromShort = "MAD",
-            ToShort = "FCO",
-            Status = "Cancelado",
-            FlightNumber = "VY6574",
-            updateTime = "20:00",
-            favorito = false
-        ),
-        FlightModel(
-            ArriveTime = "10:20",
-            DepartTime = "09:45",
-            FromShort = "VLC",
-            ToShort = "BCN",
-            Status = "Delayed",
-            FlightNumber = "VY3421",
-            updateTime = "10:00",
-            favorito = false
-        )
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +62,7 @@ fun HomeScreen(viewmodel: HomeViewmodel) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = "Recargar vuelos",
+                    contentDescription = "Update Flights",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -124,11 +80,11 @@ fun HomeScreen(viewmodel: HomeViewmodel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Buscar vuelos...") },
+                placeholder = { Text("Search Flights...") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Icono de búsqueda"
+                        contentDescription = "Search Icon"
                     )
                 },
                 singleLine = true,

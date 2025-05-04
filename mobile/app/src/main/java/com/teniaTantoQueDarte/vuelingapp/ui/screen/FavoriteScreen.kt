@@ -68,11 +68,11 @@ fun FavoriteScreen(viewModel: FavoriteViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Buscar en favoritos...") },
+                placeholder = { Text("Search on favourites...") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Icono de búsqueda"
+                        contentDescription = "Search Icon"
                     )
                 },
                 singleLine = true,
@@ -93,7 +93,7 @@ fun FavoriteScreen(viewModel: FavoriteViewModel) {
             } else if (filteredFavorites.isEmpty()) {
                 // Sin favoritos
                 Text(
-                    text = "No tienes vuelos favoritos",
+                    text = "No favourites found",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 32.dp),

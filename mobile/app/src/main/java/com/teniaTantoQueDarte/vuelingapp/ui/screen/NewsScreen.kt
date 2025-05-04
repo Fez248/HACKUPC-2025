@@ -33,8 +33,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsScreen(viewModel: NewsViewModel) {
@@ -60,13 +58,13 @@ fun NewsScreen(viewModel: NewsViewModel) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { viewModel.loadNews() },  // Asegúrate de tener este método en tu NewsViewModel
+                onClick = { viewModel.loadNews() },
                 modifier = Modifier.padding(bottom = 16.dp),
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = "Recargar noticias",
+                    contentDescription = "Update News",
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -84,11 +82,11 @@ fun NewsScreen(viewModel: NewsViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                placeholder = { Text("Buscar por número de vuelo...") },
+                placeholder = { Text("Search by flight number...") },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
-                        contentDescription = "Icono de búsqueda"
+                        contentDescription = "Search Icon"
                     )
                 },
                 singleLine = true,
