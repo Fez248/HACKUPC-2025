@@ -89,6 +89,7 @@ fun ProfileScreen(
     LaunchedEffect(permissionsState.value) {
         if (!permissionsState.value) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
@@ -99,6 +100,7 @@ fun ProfileScreen(
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissionLauncher.launch(Manifest.permission.BLUETOOTH_CONNECT)
+            permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
         }
     }
 
@@ -138,7 +140,7 @@ fun ProfileScreen(
     ) {
         // Sección de saludo (simplificada)
         Text(
-            text = "Profile",
+            text = "Hello!",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 16.dp)
@@ -160,7 +162,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Tus Puntos",
+                    text = "Points",
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -189,14 +191,14 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Comparte la App",
+                    text = "Share the app",
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Image(
                     painter = painterResource(id = R.drawable.qr),
-                    contentDescription = "Código QR para descargar la app",
+                    contentDescription = "QR code to download the app",
                     modifier = Modifier
                         .size(200.dp)
                         .padding(8.dp)
@@ -204,7 +206,7 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Escanea este código QR para descargar la aplicación en otro dispositivo",
+                    text = "Scan this QR code to download the app",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
@@ -221,13 +223,19 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Modo Compartir",
+                text = "Sharing mode",
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
+            val isBluetoothEnabled = remember { mutableStateOf(viewModel.hasBluetoothSupport()) }
             Switch(
                 checked = uiState.value.isSharingMode,
-                onCheckedChange = { viewModel.setSharingMode(!uiState.value.isSharingMode) }
+                onCheckedChange = {
+                    if(!isBluetoothEnabled.value) {
+                        viewModel.setSharingMode(false)
+                        return@Switch
+                    }
+                    viewModel.setSharingMode(!uiState.value.isSharingMode) }
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -245,7 +253,7 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Nivel de batería en tu pareja",
+                        text = "Battery level of your partner's device",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -264,7 +272,7 @@ fun ProfileScreen(
                             onClick = { viewModel.setBatteryStatus(true) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Tengo más batería que mi pareja")
+                        Text(text = "I've got more battery than my partner")
                     }
 
                     // Opción 2: Tengo menos batería
@@ -279,7 +287,7 @@ fun ProfileScreen(
                             onClick = { viewModel.setBatteryStatus(false) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Tengo menos batería que mi pareja")
+                        Text(text = "I've got lower battery than my partner")
                     }
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -291,7 +299,7 @@ fun ProfileScreen(
                         }
 
                         Text(
-                            text = "Tu código de sincronización:",
+                            text = "Your synchronization code:",
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -310,7 +318,7 @@ fun ProfileScreen(
                             )
                         }
                         Text(
-                            text = "Comparte este código con tu pareja",
+                            text = "Share this code with your partner",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -328,36 +336,34 @@ fun ProfileScreen(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "Activa tu punto de acceso",
+                                    text = "Activate your hotspot",  // "Activa tu punto de acceso"
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold
                                 )
 
-                                Spacer(modifier = Modifier.height(16.dp))
-
-                                // Instrucciones en tarjetas
+// Instrucciones en tarjetas
                                 StepCard(
                                     number = "1",
-                                    title = "Activa el punto de acceso",
-                                    description = "Ve a Ajustes > Conexiones > Compartir conexión y Punto de acceso móvil."
+                                    title = "Activate the hotspot",  // "Activa el punto de acceso"
+                                    description = "Go to Settings > Connections > Mobile Hotspot and Tethering."  // "Ve a Ajustes > Conexiones > Compartir conexión y Punto de acceso móvil."
                                 )
 
                                 StepCard(
                                     number = "2",
-                                    title = "Activa la opción",
-                                    description = "Toca en 'Punto de acceso móvil' o 'Zona Wi-Fi portátil' y activa el interruptor."
+                                    title = "Enable the option",  // "Activa la opción"
+                                    description = "Tap on 'Mobile Hotspot' or 'Portable Wi-Fi hotspot' and turn on the switch."  // "Toca en 'Punto de acceso móvil' o 'Zona Wi-Fi portátil' y activa el interruptor."
                                 )
 
                                 StepCard(
                                     number = "3",
-                                    title = "Configura sin contraseña",
-                                    description = "Toca en 'Configurar punto de acceso', selecciona 'Seguridad: Ninguna' o elimina la contraseña actual y guarda los cambios."
+                                    title = "Configure without password",  // "Configura sin contraseña"
+                                    description = "Tap on 'Configure hotspot', select 'Security: None' or remove the current password and save the changes."  // "Toca en 'Configurar punto de acceso', selecciona 'Seguridad: Ninguna' o elimina la contraseña actual y guarda los cambios."
                                 )
 
                                 StepCard(
                                     number = "4",
-                                    title = "Activa la conexión por Bluetooth",
-                                    description = "Ve a Ajustes > Conexiones > Bluetooth y actívalo. Luego ve a 'Compartir conexión' y activa 'Compartir Internet mediante Bluetooth'."
+                                    title = "Enable Bluetooth connection (modem)",  // "Activa la conexión por Bluetooth"
+                                    description = "Go to Settings > Connections > Bluetooth and turn it on. Then go to 'Tethering' and enable 'Bluetooth tethering'."  // "Ve a Ajustes > Conexiones > Bluetooth y actívalo. Luego ve a 'Compartir conexión' y activa 'Compartir Internet mediante Bluetooth'."
                                 )
 
                                 // Nota de advertencia
@@ -382,7 +388,7 @@ fun ProfileScreen(
                                         )
                                         Spacer(modifier = Modifier.width(16.dp))
                                         Text(
-                                            text = "Importante: Esta configuración permitirá que otros dispositivos se conecten a tu red. Recuerda activar la contraseña cuando termines.",
+                                            text = "Important: This configuration will allow other devices to connect to your network. Remember to enable the password when you're done.",  // "Importante: Esta configuración permitirá que otros dispositivos se conecten a tu red. Recuerda activar la contraseña cuando termines."
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onErrorContainer
                                         )
@@ -395,7 +401,7 @@ fun ProfileScreen(
                         val inputCodeState = remember { mutableStateOf("") }
 
                         Text(
-                            text = "Introduce el código de tu pareja:",
+                            text = "Enter your partner's code:",  // "Introduce el código de tu pareja:"
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -413,11 +419,21 @@ fun ProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Button(
-                            onClick = { /* Implementar sincronización */ },
+                            onClick = {
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.BLUETOOTH_SCAN
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    viewModel.connectTo(inputCodeState.value.toString())
+                                } else {
+                                    permissionLauncher.launch(Manifest.permission.BLUETOOTH_SCAN)
+                                }
+                            },
                             enabled = inputCodeState.value.length == 6,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Sincronizar")
+                            Text("Sync")  // "Sincronizar"
                         }
                     }
                 }
