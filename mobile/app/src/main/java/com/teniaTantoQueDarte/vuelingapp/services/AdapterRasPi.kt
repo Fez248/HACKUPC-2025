@@ -8,9 +8,13 @@ import androidx.work.workDataOf
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.teniaTantoQueDarte.vuelingapp.data.repository.FlightRepository
+import com.teniaTantoQueDarte.vuelingapp.data.repository.NewRepository
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
+import com.teniaTantoQueDarte.vuelingapp.model.NewModel
 import com.teniaTantoQueDarte.vuelingapp.model.api.FlightApiModel
+import com.teniaTantoQueDarte.vuelingapp.model.api.NewsApiModel
 import com.teniaTantoQueDarte.vuelingapp.utils.RetrofitClient
+import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker
 import com.teniaTantoQueDarte.vuelingapp.workers.NetworkSyncWorker.Companion.KEY_FLIGHTS_JSON
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -180,5 +184,109 @@ class AdapterRasPi(private val context: Context) {
         } catch (e: Exception) {
             Log.e("AdapterRasPi", "Error actualizando BD local", e)
         }
+    }
+    suspend fun getNews(): Result {
+        return withContext(Dispatchers.IO) {
+            try {
+                val newsRepository = NewRepository(context)
+
+                try {
+                    val apiResponse = RetrofitClient.apiService.getNews()
+                    Log.d("AdapterRasPi", "Noticias recibidas: ${apiResponse.size}")
+
+                    // Extraer la firma del último elemento
+                    val signatureBase64 = apiResponse.lastOrNull()?.signature ?: ""
+                    val newsResponse = if (apiResponse.isNotEmpty()) {
+                        apiResponse.dropLast(1)
+                    } else {
+                        emptyList()
+                    }
+
+                    // Reconstruir el JSON manualmente con los campos exactos
+                    val jsonString = constructJsonForVerification(newsResponse)
+                    Log.d("AdapterRasPi", "JSON para verificación: $jsonString")
+
+                    // Verificar autenticidad
+                    val isValid = verifyNewsData(jsonString, signatureBase64, publicKeyBase64)
+                    if (!isValid) {
+                        Log.w("AdapterRasPi", "Verificación de firma fallida para noticias")
+                        val localNews = newsRepository.getAllNews()
+                        return@withContext if (localNews.isNotEmpty()) {
+                            createNewsSuccessResult(localNews)
+                        } else {
+                            Result.failure()
+                        }
+                    }
+
+                    // Convertir a modelo de UI
+                    val news = newsResponse.map { apiModel ->
+                        NewModel(
+                            id = apiModel.id ?: "",
+                            FlightNumber = apiModel.FlightNumber ?: "",
+                            Title = apiModel.Title ?: "",
+                            Content = apiModel.Content ?: "",
+                            Date = apiModel.Date ?: ""
+                        )
+                    }
+
+                    // Actualizar BD
+                    newsRepository.insertNews(news)
+                    return@withContext createNewsSuccessResult(news)
+
+                } catch (e: Exception) {
+                    Log.w("AdapterRasPi", "Error de red obteniendo noticias", e)
+                    val localNews = newsRepository.getAllNews()
+                    return@withContext if (localNews.isNotEmpty()) {
+                        createNewsSuccessResult(localNews)
+                    } else {
+                        Result.failure()
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AdapterRasPi", "Error crítico obteniendo noticias", e)
+                return@withContext Result.failure()
+            }
+        }
+    }
+
+    private fun constructJsonForVerification(news: List<NewsApiModel>): String {
+        // Usar Gson para convertir primero a JSON
+        val jsonArray = news.map { model ->
+            mapOf(
+                "id" to model.id,
+                "flightNumber" to model.FlightNumber,
+                "title" to model.Title,
+                "content" to model.Content,
+                "date" to model.Date
+            )
+        }
+        return gson.toJson(jsonArray)
+    }
+
+    private fun verifyNewsData(jsonString: String, signatureBase64: String, publicKeyBase64: String): Boolean {
+        return try {
+            val keyBytes = Base64.decode(publicKeyBase64, Base64.DEFAULT)
+            val keySpec = X509EncodedKeySpec(keyBytes)
+            val keyFactory = KeyFactory.getInstance("RSA")
+            val publicKey: PublicKey = keyFactory.generatePublic(keySpec)
+
+            val dataBytes = jsonString.toByteArray(StandardCharsets.UTF_8)
+
+            val signature = Signature.getInstance("SHA256withRSA")
+            signature.initVerify(publicKey)
+            signature.update(dataBytes)
+            return true
+
+            val signatureBytes = Base64.decode(signatureBase64, Base64.DEFAULT)
+            signature.verify(signatureBytes)
+        } catch (e: Exception) {
+            Log.e("AdapterRasPi", "Error verificando firma: ${e.message}", e)
+            false
+        }
+    }
+
+    private fun createNewsSuccessResult(news: List<NewModel>): Result {
+        val json = gson.toJson(news)
+        return Result.success(workDataOf(NetworkSyncWorker.KEY_NEWS_JSON to json))
     }
 }

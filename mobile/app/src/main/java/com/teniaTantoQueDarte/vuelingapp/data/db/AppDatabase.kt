@@ -8,7 +8,7 @@ import com.teniaTantoQueDarte.vuelingapp.data.dao.*
 import com.teniaTantoQueDarte.vuelingapp.data.model.*
 
 
-@Database(entities = [User::class, FlightModel::class, NewModel::class], version = 2, exportSchema = false)
+@Database(entities = [User::class, FlightModel::class, NewModel::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun flightDao(): FlightDao

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 import com.teniaTantoQueDarte.vuelingapp.model.FlightModel
 import com.teniaTantoQueDarte.vuelingapp.utils.RetrofitClient
 import android.util.Log
+import com.teniaTantoQueDarte.vuelingapp.services.AdapterRasPi
 
 
 class NetworkSyncWorker(
@@ -28,6 +29,7 @@ class NetworkSyncWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
+        val KEY_NEWS_JSON = "news_json"
         const val SYNC_WORK_NAME = "network_sync_work"
         const val KEY_FLIGHTS_JSON = "flights_json"
 
@@ -58,29 +60,9 @@ class NetworkSyncWorker(
             Log.d("NetworkSyncWorker", "Iniciando sincronización de datos")
 
             // Retrofit call
-            val apiResponse = RetrofitClient.apiService.getFlights()
-            Log.d("NetworkSyncWorker", "Respuesta API recibida: ${apiResponse.size} vuelos")
-
-            val flights = apiResponse.map { apiModel ->
-                FlightModel(
-                    ArriveTime = apiModel.landingTime ?: "Unknown",
-                    DepartTime = apiModel.departureTime ?: "Unknown",
-                    FromShort = apiModel.originShort ?: "",
-                    ToShort = apiModel.destinationShort ?: "",
-                    Status = apiModel.status ?: "Unknown",
-                    FlightNumber = apiModel.flightNumber ?: "",
-                    updateTime = apiModel.date ?: "Unknown",
-                    favorito = false
-                )
-            }
-
-            // Serialize to JSON
-            val json = Gson().toJson(flights)
-            Log.d("NetworkSyncWorker", "JSON generado: ${json.take(100)}...")
-
-            // Return as outputData
-            val outputData = workDataOf(KEY_FLIGHTS_JSON to json)
-            Result.success(outputData)
+            val adapter = AdapterRasPi(applicationContext)
+            val response = adapter.getFlights()
+            return@withContext response
         } catch (e: Exception) {
             Log.e("NetworkSyncWorker", "Error en sincronización", e)
             Result.retry()

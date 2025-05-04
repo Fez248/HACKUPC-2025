@@ -1,20 +1,14 @@
 package com.teniaTantoQueDarte.vuelingapp.model.api
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
 data class NewsApiModel(
-    @SerialName("id")
-    val id: String,
-    @SerialName("flightNumber")
-    val FlightNumber: String,
-    @SerialName("title")
-    val Title: String,
-    @SerialName("content")
-    val Content: String,
-    @SerialName("date")
-    val Date: String,
-    @SerialName("signature")
-    val signature: String
+    val id: String?,
+    @SerializedName("flightNumber") val FlightNumber: String?,
+    @SerializedName("title") val Title: String?,
+    @SerializedName("content") val Content: String?,
+    @SerializedName("date") val Date: String?,
+    val signature: String?
 )
