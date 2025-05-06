@@ -67,8 +67,11 @@ Last but not least, thank you to all our friends who motivated us throughout the
 ## Related
 
 [Event by HACKUPC](https://hackupc.com/)
+
 [Built at FIB](https://www.fib.upc.edu/)
+
 [Challenge by Vueling](https://www.vueling.com/en)
+
 [Inspired by Spain blackout](https://en.wikipedia.org/wiki/2025_Iberian_Peninsula_blackout)
 
 ## Support
