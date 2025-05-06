@@ -1,162 +1,88 @@
-# HACKUPC-2025
 
-## 🗂️ Endpoints
+<h1 align="center">
+  <br>
+  <a href=""><img src="https://github.com/user-attachments/assets/a68de562-1edd-41cf-b068-ead7d26abd5f" alt="MMG" width="200"></a>
+  <br>
+  MMG - HACKUPC 2025 Winner
+  <br>
+</h1>
 
-### Base URL
-```
-http://<HOST_OR_IP>/
-```
+<h4 align="center">App, server, and admin portal built for blackout-ready Wi-Fi/Bluetooth networks</h4>
 
----
+<p align="center">
+  <a href="https://github.com/Fez248/HACKUPC-2025/graphs/contributors">
+    <img src="https://img.shields.io/badge/Contributors%204-blue?style=for-the-badge"
+         alt="Contributors">
+  </a>
+  <a href="https://devpost.com/software/mmg"><img src="https://img.shields.io/badge/HACKUPC%20Winner-yellow?style=for-the-badge"></a>
+</p>
 
-### 1. Get Flight Data
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#thanks-to">Thanks to </a> •
+  <a href="#related">Related</a> •
+  <a href="#license">License</a>
+</p>
 
-#### Endpoints:
-- **GET** `/api/:flightNumber/data`
-    Get data for a specific flight.
-- **GET** `/api/ALL/data`
-    Get all flights.
+<h5 align="center">Where the idea was born — scribbled on a whiteboard somewhere deep inside FIB</h5>
 
-#### Response Examples:
-- **Single Flight:**
-    ```json
-    {
-        "data": {
-            "flightNumber": "UA123",
-            "origin": "...",
-            "...": "..."
-        }
-    }
-    ```
+![screenshot](https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/003/406/267/datas/gallery.jpg)
 
-- **All Flights:**
-    ```json
-    [
-        { "flightNumber": "...", ... },
-        { "flightNumber": "...", ... }
-    ]
-    ```
+## Key Features
 
----
+* Offline Flight Updates
+    - Stay informed with real-time flight data even during power outages and internet loss.
 
-### 2. Get Flight News
+* Blackout-Resilient Network
+    - Operates over a self-sustained wireless infrastructure using Wi-Fi and Bluetooth — no external internet required.
 
-#### Endpoints:
-- **GET** `/api/:flightNumber/news`
-    Get news items for a specific flight.
-- **GET** `/api/ALL/news`
-    Get all news items.
+* Energy-Efficient Design
+    - Optimized for low battery consumption to ensure connectivity during emergencies.
 
-#### Response Examples:
-- **Specific Flight News:**
-    ```json
-    {
-        "news": [
-            { "id": "news001", "flightNumber": "UA123", ... },
-            { "id": "news005", "flightNumber": "UA123", ... }
-        ]
-    }
-    ```
+* Decentralized Architecture
+    - Uses Raspberry Pi clusters and mobile devices to create a mesh network for seamless communication.
 
-- **All News:**
-    ```json
-    [
-        { "id": "...", ... },
-        { "id": "...", ... }
-    ]
-    ```
+* Multi-Device Connectivity
+    - Supports subnet bridging via smartphones, enabling a wider and more reliable local network.
 
----
+* Mobile App Interface
+    - Android app built with Kotlin and Room for a smooth and responsive user experience.
 
-## 🔧 Admin Endpoints
+* Custom Access Point Setup
+    - Hosts its own local Wi-Fi access point for devices to connect without relying on third-party infrastructure.
 
-> **Note:** No authentication is implemented—only call these from trusted/admin contexts.
+* Resilient to Network Failures
+    - Maintains internal communication and services even when parts of the network go offline.
 
-### 3. Update Flight Data
+## Thanks to
 
-#### Endpoint:
-- **PATCH** `/api/admin/:flightNumber/data`
+We would like to thank all the members of HackUPC—organizers, volunteers, mentors, and everyone who makes this event possible year after year. You’ve truly created an exceptional experience and community.
 
-#### Request Body:
-JSON object with one or more updatable fields:
-```json
-[
-    "origin", "destination",
-    "departureTime", "arrivalTime",
-    "status", "gate", "door", "terminal"
-]
-```
+We’d also like to thank the sponsors for bringing such exciting and engaging challenges.
 
-#### Success Response:
-```json
-{ "message": "Flight updated", "flight": { ... } }
-```
+Last but not least, thank you to all our friends who motivated us throughout the event and helped make the long hours fly by.
 
-#### Example (JavaScript `fetch`):
-```javascript
-fetch(`/api/admin/UA123/data`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        departureTime: '2025-05-10T09:00:00Z',
-        gate: 'G4'
-    })
-})
-.then(r => r.json())
-.then(console.log);
-```
+(And a special thanks to Arnau for creating the logo)
+
+## Related
+
+[Event by HACKUPC](https://hackupc.com/)
+[Built at FIB](https://www.fib.upc.edu/)
+[Challenge by Vueling](https://www.vueling.com/en)
+[Inspired by Spain blackout](https://en.wikipedia.org/wiki/2025_Iberian_Peninsula_blackout)
+
+## Support
+
+<h5>Just support HACKUPC</h5>
+
+## License
+
+MIT
 
 ---
 
-### 4. Create/Replace News for a Flight
+> Linkedin [Ferran Benéitez Borrut](https://linkedin.com/in/ferran-beneitez)
+> Linkedin [Iván Moreno Santín](https://linkedin.com/in/ivan-moreno-santin)
+> Linkedin [David Berrocal Fidalgo](https://linkedin.com/in/david-berrocal-fidalgo-132493363)
+> Linkedin [Sergi Sanmartin Soria](https://linkedin.com/in/sergi-sanmartin-i-soria-0631a2300)
 
-#### Endpoint:
-- **POST** `/api/admin/news`
-
-#### Request Body:
-JSON object with all required fields:
-```json
-{
-    "id": "<unique-news-id>",
-    "flightNumber": "<flightNumber>",
-    "title": "<string>",
-    "content": "<string>",
-    "date": "<ISO timestamp>"
-}
-```
-
-#### Success Response:
-```json
-{ "message": "News saved...", "article": { ... } }
-```
-
-#### Example (JavaScript `fetch`):
-```javascript
-fetch(`/api/admin/news`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        id: 'news123',
-        flightNumber: 'UA123',
-        title: 'Gate Changed',
-        content: 'Flight UA123 now departs from Gate G4.',
-        date: '2025-05-03T15:00:00Z'
-    })
-})
-.then(r => r.json())
-.then(console.log);
-```
-
----
-
-## ⚠️ Error Responses
-
-- **400 Bad Request:** Missing/invalid parameters or attempting to change `flightNumber`/`id`.
-    ```json
-    { "error": "Flight number is required" }
-    ```
-
-- **404 Not Found:** Flight or news item doesn’t exist.
-    ```json
-    { "error": "Flight not found" }
-    ```
