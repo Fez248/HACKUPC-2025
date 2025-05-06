@@ -90,6 +90,6 @@ MIT
 
 > Linkedin [David Berrocal Fidalgo](https://linkedin.com/in/david-berrocal-fidalgo-132493363)
 
-> Linkedin [Sergi Sanmartin Soria](https://linkedin.com/in/sergi-sanmartin-i-soria-0631a2300)
+> Linkedin [Sergi Sanmartin Soria](https://linkedin.com/in/sergisanmartin)
 
 
