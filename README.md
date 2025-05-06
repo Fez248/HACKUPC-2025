@@ -82,7 +82,11 @@ MIT
 ---
 
 > Linkedin [Ferran Benéitez Borrut](https://linkedin.com/in/ferran-beneitez)
+
 > Linkedin [Iván Moreno Santín](https://linkedin.com/in/ivan-moreno-santin)
+
 > Linkedin [David Berrocal Fidalgo](https://linkedin.com/in/david-berrocal-fidalgo-132493363)
+
 > Linkedin [Sergi Sanmartin Soria](https://linkedin.com/in/sergi-sanmartin-i-soria-0631a2300)
+
 
